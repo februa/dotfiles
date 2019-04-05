@@ -18,5 +18,5 @@ hook_source = '''
     " <S-TAB>: completion back.
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
 '''
-[[plugins]]
-repo = 'Shougo/denite.nvim'
+[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'

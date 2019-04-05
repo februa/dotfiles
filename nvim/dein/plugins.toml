@@ -1,10 +1,5 @@
 [[plugins]]
 repo = 'Shougo/dein.vim'
-[[plugins]]
-repo = 'itchyny/lightline.vim'
-hook_add = '''
-
-'''
 
 [[plugins]]
 repo = 'kassio/neoterm'
@@ -21,6 +16,14 @@ on_ft = 'toml'
 [[plugins]]
 repo = 'Townk/vim-autoclose'
 
+# vim surround
+[[plugins]]
+repo = 'rhysd/vim-operator-surround'
+hook_add = '''
+map <silent>sa <Plug>(operator-surround-append)
+map <silent>sd <Plug>(operator-surround-delete)
+map <silent>sr <Plug>(operator-surround-replace)
+'''
 # vim-autosave
 [[plugins]]
 repo = 'vim-scripts/vim-auto-save'
@@ -30,18 +33,173 @@ let g:auto_save_in_insert_mode = 0
 let g:auto_save_no_updatetime = 1
 let g:auto_save_silent = 1
 '''
-
-# vaffle.vim -- file manager
+# denite nvim {{{
 [[plugins]]
-repo = 'cocopon/vaffle.vim'
+repo = 'Shougo/denite.nvim'
+on_event = 'BufRead'
+hook_add = '''
+"現在開いているファイルのディレクトリ下のファイル一覧。
+nnoremap <silent> sN :<C-u>DeniteBufferDir
+      \ -direction=topleft -cursor-wrap=true file file:new<CR>
+"バッファ一覧
+nnoremap <silent> sP :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR>
+"最近使用したファイル一覧
+nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<CR>
+'''
+hook_post_source = '''
+call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
+
+call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
+call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
+
+call denite#custom#alias('source', 'file_rec/git', 'file_rec')
+call denite#custom#var('file_rec/git', 'command',
+  \ ['git', 'ls-files', '-co', '--exclude-standard'])
+
+call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
+call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
+call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
+'''
+[[plugins]]
+repo = 'nixprime/cpsm'
+build = 'env PY3=ON ./install.sh'
 [[plugins]]
 repo = 'tpope/vim-fugitive'
 [[plugins]]
-repo = 'Shougo/defx.nvim'
+repo = 'Shougo/neomru.vim'
+# }}}
+# LeafCage/foldCC {{{
+[[plugins]]
+repo = 'LeafCage/foldCC'
+hook_add = '''set foldtext=FoldCCtext()'''
+# }}}
+# lightline.vim {{{
+[[plugins]]
+repo = 'itchyny/lightline.vim'
 hook_add = '''
+let g:lightline = {
+      \'colorscheme': 'nord',
+      \'active': {
+            \'left': [['prepare', 'mode', 'filename'], ['fugitive']],
+            \'right': [['lineinfo'], ['fileinfo'], ['ale']]},
+      \'component_visible_condition': {
+            \'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
+      \'component_function': {
+            \'prepare': 'LLPrepare',
+            \'mode': 'LLMode',
+            \'filename': 'LLFileName',
+            \'fugitive': 'LLFugitive',
+            \'fileinfo': 'LLFileInfo',
+            \'lineinfo': 'LLLineInfo',
+            \'ale': 'LLAle',
+            \},
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '', 'right': '' }
+      \}
+let g:lightline.inactive = g:lightline.active
 
+function! LLPrepare()
+  let g:ll_mode = ''
+  let g:ll_filename = ''
+  let g:ll_fugitive = ''
+  let g:ll_fileinfo = ''
+  let g:ll_lineinfo = ''
+  let g:ll_ale = ''
+
+  let l:ww = winwidth('.')
+  let l:total_len = 0
+
+  let g:ll_mode = lightline#mode() . (&paste ? ' P' : '')
+  if g:ll_mode !=# ''
+    let l:total_len += strlen(g:ll_mode) + 2
+    if l:ww < l:total_len
+      return ''
+    endif
+  endif
+
+  let g:ll_lineinfo = printf('%d/%d:%d', line('.'), line('$'), col('.'))
+  if g:ll_lineinfo !=# ''
+    let l:total_len += strlen(g:ll_lineinfo) + 2
+    if l:ww < l:total_len
+      let g:ll_lineinfo = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_filename = expand('%:t') . (&filetype !~? 'help' && &readonly ? ' RO' : '') . (&modifiable && &modified ? ' +' : '')
+  if g:ll_filename !=# ''
+    let l:total_len += strlen(g:ll_filename) + 2
+    if l:ww < l:total_len
+      let g:ll_filename = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_fileinfo = &fileformat . ' ' . (strlen(&fileencoding) ? &fileencoding : &encoding) . ' ' . (strlen(&filetype) ? &filetype : 'no')
+  if g:ll_fileinfo !=# ''
+    let l:total_len += strlen(g:ll_fileinfo) + 2
+    if l:ww < l:total_len
+      let g:ll_fileinfo = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_ale = LLGetAle()
+  if g:ll_ale !=# ''
+    let l:total_len += strlen(g:ll_ale) + 2
+    if l:ww < l:total_len
+      let g:ll_ale = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_fugitive = exists('*fugitive#head') ? fugitive#head() : ''
+  if g:ll_fugitive !=# ''
+    let l:total_len += strlen(g:ll_fugitive) + 2
+    if l:ww < l:total_len
+      let g:ll_fugitive = ''
+      return ''
+    endif
+  endif
+
+  return ''
+endfunction
+
+function! LLMode()
+  return g:ll_mode
+endfunction
+
+function! LLFileName()
+  return g:ll_filename
+endfunction
+
+function! LLFugitive()
+  return g:ll_fugitive
+endfunction
+
+function! LLFileInfo()
+  return g:ll_fileinfo
+endfunction
+
+function! LLLineInfo()
+  return g:ll_lineinfo
+endfunction
+
+function! LLAle()
+  return g:ll_ale
+endfunction
+
+if dein#tap('ale')
+  function! LLGetAle()
+    let l:count = ale#statusline#Count(bufnr(''))
+    let l:errors = l:count.error + l:count.style_error
+    let l:warnings = l:count.warning + l:count.style_warning
+    return l:count.total == 0 ? 'OK' : 'E:' . l:errors . ' W:' . l:warnings
+  endfunction
+else
+  function! LLGetAle()
+    return ''
+  endfunction
+endif
 '''
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
+# }}}
