@@ -1,0 +1,47 @@
+[[plugins]]
+repo = 'Shougo/dein.vim'
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+
+'''
+
+[[plugins]]
+repo = 'kassio/neoterm'
+
+[[plugins]]
+repo = 'prettier/vim-prettier'
+
+# Toml
+[[plugins]]
+repo  = 'cespare/vim-toml'
+on_ft = 'toml'
+
+# vim-autoclose
+[[plugins]]
+repo = 'Townk/vim-autoclose'
+
+# vim-autosave
+[[plugins]]
+repo = 'vim-scripts/vim-auto-save'
+hook_add = '''
+let g:auto_save = 1
+let g:auto_save_in_insert_mode = 0
+let g:auto_save_no_updatetime = 1
+let g:auto_save_silent = 1
+'''
+
+# vaffle.vim -- file manager
+[[plugins]]
+repo = 'cocopon/vaffle.vim'
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+[[plugins]]
+repo = 'Shougo/defx.nvim'
+hook_add = '''
+
+'''
+[[plugins]]
+repo = 'roxma/nvim-yarp'
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
