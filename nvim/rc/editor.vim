@@ -1,3 +1,27 @@
+set gdefault
+set hidden
+set clipboard=unnamedplus
+set undofile
+set swapfile
+" Auto-close quickfix window
+autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
+
+" Search:
+" Highlight <>.
+set matchpairs+=<:>
+" Ignore the case of normal letters.
+set ignorecase
+" If the search pattern contains upper case characters, override ignorecase
+" option.
+set smartcase
+" Enable incremental search.
+set incsearch
+" Don't highlight search result.
+set nohlsearch
+" Searches wrap around the end of the file.
+set wrapscan
+
+" Edit:
 filetype plugin indent on
 " Smart insert tab setting.
 set smarttab
@@ -13,21 +37,5 @@ set shiftwidth=4
 set shiftround
 " Enable smart indent.
 set autoindent smartindent
-" Highlight <>.
-set matchpairs+=<:>
-" Ignore the case of normal letters.
-set ignorecase
-" If the search pattern contains upper case characters, override ignorecase
-" option.
-set smartcase
-" Enable incremental search.
-set incsearch
-" Don't highlight search result.
-set nohlsearch
-" Searches wrap around the end of the file.
-set wrapscan
-set gdefault
-set hidden
-set clipboard=unnamedplus
-" Auto-close quickfix window
-autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
+
+set nosplitbelow

@@ -3,9 +3,8 @@ if has('win64')
     set shellcmdflag=-NoProfile\ -NoLogo\ -NonInteractive\ -Command
 endif
 
-
 " Open terminal on new buffer
-autocmd VimEnter * if @% == '' && s:GetBufByte() == 0 | call Term()
+autocmd MyAutoCmd VimEnter * if @% == '' && s:GetBufByte() == 0 | call Term()
 function! s:GetBufByte()
   let byte = line2byte(line('$') + 1)
   if byte == -1
@@ -30,12 +29,14 @@ function! OnExit(job_id, code, event)
     call CloseLastTerm()
   endif
 endfunction
+
 function! CloseBuf()
   if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
     :q
+  elseif bufname('$') =~ "^term"
+    :bn
   else
     :bd
   endif
 endfunction
-
-nnoremap <Leader>q :up<CR>:call CloseBuf()<CR>
+nnoremap :q :up<CR>:call CloseBuf()<CR>
