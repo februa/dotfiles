@@ -37,3 +37,5 @@ set shiftwidth=4
 set shiftround
 " Enable smart indent.
 set autoindent smartindent
+
+set nosplitbelow

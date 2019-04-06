@@ -3,9 +3,8 @@ if has('win64')
     set shellcmdflag=-NoProfile\ -NoLogo\ -NonInteractive\ -Command
 endif
 
-
 " Open terminal on new buffer
-autocmd VimEnter * if @% == '' && s:GetBufByte() == 0 | call Term()
+autocmd MyAutoCmd VimEnter * if @% == '' && s:GetBufByte() == 0 | call Term()
 function! s:GetBufByte()
   let byte = line2byte(line('$') + 1)
   if byte == -1
@@ -40,5 +39,3 @@ function! CloseBuf()
     :bd
   endif
 endfunction
-
-cnoremap q :up<CR>:call CloseBuf()<CR>

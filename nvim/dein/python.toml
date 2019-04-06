@@ -1,4 +1,34 @@
-# 補完
+# jedi vim python completion {{{
+[[plugins]]
+repo = 'davidhalter/jedi-vim'
+on_ft = 'python'
+hook_add = '''
+" jedi本体の補完は切る（deoplete-jediで非同期処理をしてくれるため）
+let g:jedi#completions_enabled = 0
+let g:jedi#auto_vim_configuration = 0
+let g:jedi#popup_select_first = 0
+let g:jedi#show_call_signatures = "1"
+
+let g:jedi#goto_command = "<leader>d"
+let g:jedi#goto_assignments_command = "<leader>g"
+let g:jedi#goto_definitions_command = ""
+let g:jedi#documentation_command = "K"
+let g:jedi#usages_command = "<leader>n"
+let g:jedi#rename_command = "<leader>r"
+" I don't want the docstring window to popup during completion
+" autocmd FileType python setlocal completeopt-=preview
+'''
+[[plugins]]
+repo = 'deoplete-plugins/deoplete-jedi'
+on_ft = 'python'
+hook_add = '''
+let g:deoplete#sources#jedi#server_timeout=100
+let g:deoplete#sources#jedi#statement_length=100
+let g:deoplete#sources#jedi#show_docstring=1
+'''
+
+# }}}
+# 補完 {{{
 [[plugins]]
 repo = 'Shougo/deoplete.nvim'
 depends = 'context_filetype.vim'
@@ -17,6 +47,65 @@ hook_source = '''
 
     " <S-TAB>: completion back.
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+
+    inoremap <expr><tab> pumvisible() ? "\<C-n>" : neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<tab>"
 '''
-[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
-repo = 'Shougo/context_filetype.vim'
+[[plugins]]
+repo = 'Shougo/neosnippet'
+hook_source = '''
+  imap <C-k> <Plug>(neosnippet_expand_or_jump)
+  smap <C-k> <Plug>(neosnippet_expand_or_jump)
+  xmap <C-k> <Plug>(neosnippet_expand_target)
+  if has('conceal')
+    set conceallevel=2 concealcursor=niv
+  endif
+'''
+on_i  = 1
+on_ft = ['snippet']
+depends = ['neosnippet-snippets']
+
+[[plugins]]
+repo = 'Shougo/neosnippet-snippets'
+
+# }}}
+[[plugins]]
+repo = 'lervag/vimtex'
+on_ft = 'tex'
+hook_post_source = '''
+" This is new style
+call deoplete#custom#var('omni', 'input_patterns', {
+        \ 'tex': g:vimtex#re#deoplete
+        \})
+'''
+hook_add = '''
+" This is old style (deprecated)
+" if !exists('g:deoplete#omni#input_patterns')
+"     let g:deoplete#omni#input_patterns = {}
+" endif
+
+if has('mac')
+  let g:vimtex_view_method='skim'
+else
+  let g:vimtex_view_method='zathura'
+endif
+if has('nvim')
+  let g:vimtex_compiler_progname
+        \ = 'nvr'
+endif
+
+let g:vimtex_compiler_latexmk = {
+      \ 'background': 1,
+      \ 'build_dir': '',
+      \ 'continuous': 1,
+      \ 'options': [
+      \    '-pdfdvi',
+      \    '-verbose',
+      \    '-file-line-error',
+      \    '-synctex=1',
+      \    '-interaction=nonstopmode',
+      \],
+      \}
+let g:vimtex_view_general_viewer
+      \ = 'zathura'
+let g:vimtex_view_general_options = '-r @line @pdf @tex'
+'''
