@@ -39,4 +39,6 @@ set shiftround
 set autoindent smartindent
 
 set nosplitbelow
-set showtabline=2
+if has('win64')
+    set showtabline=0
+endif
