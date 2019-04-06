@@ -1,6 +1,10 @@
 if has('win64')
     set shell=cmd.exe
     set shellcmdflag=-NoProfile\ -NoLogo\ -NonInteractive\ -Command
+    set shellpipe=|
+    set shellredir=>
+
+    source $VIMRUNTIME/mswin.vim
 endif
 
 " Open terminal on new buffer
