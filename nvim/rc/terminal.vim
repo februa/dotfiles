@@ -39,3 +39,4 @@ function! CloseBuf()
     :bd
   endif
 endfunction
+nnoremap :q :up<CR>:call CloseBuf()<CR>
