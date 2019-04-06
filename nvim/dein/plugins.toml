@@ -4,6 +4,11 @@ repo = 'Shougo/dein.vim'
 [[plugins]]
 repo = 'Shougo/vimproc'
 build = 'make'
+hook_source = '''
+if has('win64')
+    let g:vimproc#download_windows_dll = 1
+endif
+'''
 
 [[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
 repo = 'osyo-manga/vim-precious'
@@ -41,13 +46,6 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 0
 let g:ale_keep_list_window_open = 0
-'''
-[[plugins]]
-repo = 'jsfaint/gen_tags.vim'
-on_ft = ['python', 'tex']
-hook_add = '''
-let g:gen_tags#ctags_auto_gen = 1
-let g:gen_tags#gtags_auto_gen = 1
 '''
 
 [[plugins]]
