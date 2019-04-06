@@ -39,3 +39,4 @@ set shiftround
 set autoindent smartindent
 
 set nosplitbelow
+set showtabline=2
