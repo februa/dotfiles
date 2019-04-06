@@ -1,3 +1,7 @@
+if &compatible
+  set nocompatible
+endif
+
 " reset augroup
 augroup MyAutoCmd
     autocmd!
@@ -26,4 +30,3 @@ call s:load('mouse')
 call s:load('plugins')
 call s:load('terminal')
 call s:load('editor')
-

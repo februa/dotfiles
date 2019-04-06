@@ -12,16 +12,12 @@ nnoremap Q gq
 nnoremap j gj
 nnoremap k gk
 
-" Useful save mappings.
-nnoremap <silent> <Leader><Leader> :<C-u>update<CR>
 " Visual mode keymappings:
 " Indent
 nnoremap > >>
 nnoremap < <<
 xnoremap > >gv
 xnoremap < <gv
-" Disable Ex-mode.
-nnoremap Q  q
 " Disable ZZ.
 nnoremap ZZ  <Nop>
 " Easy escape.

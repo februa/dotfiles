@@ -1,5 +1,7 @@
 [[plugins]] # カラースキーマ
 repo = 'tomasr/molokai'
+[[plugins]]
+repo = 'raphamorim/lucario'
 
 hook_add = '''
   "set background=dark
@@ -7,5 +9,5 @@ hook_add = '''
   autocmd MyAutoCmd ColorScheme * highlight LineNr ctermbg=none
   " colorscheme 設定は source 後に行う必要があるので VimEnter で行う。
   " 但し Colorscheme イベントの発生が抑制されないよう nented を付ける。
-  autocmd MyAutoCmd VimEnter * nested colorscheme molokai
+  autocmd MyAutoCmd VimEnter * nested colorscheme lucario
 '''
