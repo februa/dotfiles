@@ -29,7 +29,6 @@ inoremap jj  <ESC>
 cnoremap <expr> j
       \ getcmdline()[getcmdpos()-2] ==# 'j' ? "\<BS>\<C-c>" : 'j'
 inoremap j<Space>    j
-nnoremap q :up<CR>:call CloseBuf()<CR>
 
 nnoremap s <Nop>
 nnoremap sj <C-w>j
