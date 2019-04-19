@@ -89,6 +89,8 @@ hook_add = '''
 
 if has('mac')
   let g:vimtex_view_method='skim'
+elseif has('win64')
+  let g:vimtex_view_method='C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe'
 else
   let g:vimtex_view_method='zathura'
 endif
@@ -96,21 +98,21 @@ if has('nvim')
   let g:vimtex_compiler_progname
         \ = 'nvr'
 endif
-
-let g:vimtex_compiler_latexmk = {
-      \ 'background': 1,
-      \ 'build_dir': '',
-      \ 'continuous': 1,
-      \ 'options': [
-      \    '-pdfdvi',
-      \    '-verbose',
-      \    '-file-line-error',
-      \    '-synctex=1',
-      \    '-interaction=nonstopmode',
-      \],
-      \}
+"
+" let g:vimtex_compiler_latexmk = {
+"      \ 'background': 1,
+"      \ 'build_dir': '',
+"      \ 'continuous': 1,
+"      \ 'options': [
+"      \    '-pdfdvi',
+"      \    '-verbose',
+"      \    '-file-line-error',
+"      \    '-synctex=1',
+"      \    '-interaction=nonstopmode',
+"      \],
+"      \}
 let g:vimtex_view_general_viewer
-      \ = 'zathura'
+      \ = g:vimtex_view_method
 let g:vimtex_view_general_options = '-r @line @pdf @tex'
 '''
 
