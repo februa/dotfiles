@@ -160,12 +160,10 @@ build = 'env PY3=ON ./install.sh'
 [[plugins]]
 repo = 'tpope/vim-fugitive'
 hook_add = '''
-nmap [fugitive] <Nop>
-map g [fugitive]
-nmap <silent> [fugitive]s :<C-u>Gstatus<CR>
-nmap <silent> [fugitive]d :<C-u>Gdiff<CR>
-nmap <silent> [fugitive]b :<C-u>Gblame<CR>
-nmap <silent> [fugitive]l :<C-u>Glog<CR>
+nmap <silent> gs :<C-u>Gstatus<CR>
+nmap <silent> gd :<C-u>Gdiff<CR>
+nmap <silent> gb :<C-u>Gblame<CR>
+nmap <silent> gl :<C-u>Glog<CR>
 '''
 [[plugins]]
 repo = 'airblade/vim-gitgutter'
