@@ -76,58 +76,30 @@ repo = 'Shougo/neosnippet-snippets'
 repo = 'lervag/vimtex'
 on_ft = 'tex'
 hook_post_source = '''
-call deoplete#custom#var('omni', 'input_patterns', {
-       \ 'tex': g:vimtex#re#deoplete
-       \})
-" This is old style (deprecated)
+if call dein#check_install('deoplete.nvim')
+    call deoplete#custom#var('omni', 'input_patterns', {
+        \ 'tex': g:vimtex#re#deoplete
+        \})
+endif
 '''
 hook_add = '''
-<<<<<<< HEAD
-=======
-" This is old style (deprecated)
-" if !exists('g:deoplete#omni#input_patterns')
-"     let g:deoplete#omni#input_patterns = {}
-" endif
 
 if has('mac')
   let g:vimtex_view_method='skim'
 elseif has('win64')
   let g:vimtex_view_method='C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe'
 else
-  let g:vimtex_view_method='zathura'
+  let g:vimtex_view_method='evince'
 endif
->>>>>>> neovim-init-options
 if has('nvim')
   let g:vimtex_compiler_progname
         \ = 'nvr'
 endif
-<<<<<<< HEAD
-let g:vimtex_view_general_viewer
-      \ = 'evince'
-=======
-"
-" let g:vimtex_compiler_latexmk = {
-"      \ 'background': 1,
-"      \ 'build_dir': '',
-"      \ 'continuous': 1,
-"      \ 'options': [
-"      \    '-pdfdvi',
-"      \    '-verbose',
-"      \    '-file-line-error',
-"      \    '-synctex=1',
-"      \    '-interaction=nonstopmode',
-"      \],
-"      \}
 let g:vimtex_view_general_viewer
       \ = g:vimtex_view_method
->>>>>>> neovim-init-options
 let g:vimtex_view_general_options = '-r @line @pdf @tex'
-let g:vimtex_fold_enabled=1
+let g:vimtex_fold_enabled=0
 let g:vimtex_fold_manual = 1
-" let g:vimtex_fold_types = {
-"            \ 'preamble' : {'enabled' : 0},
-"            \ 'envs' : {'enabled' : 0 },
-"            \}
 '''
 
 [[plugins]]
