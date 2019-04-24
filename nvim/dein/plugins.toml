@@ -132,6 +132,18 @@ nnoremap <silent> sN :<C-u>DeniteBufferDir
 nnoremap <silent> sP :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR>
 "最近使用したファイル一覧
 nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<CR>
+
+let s:denite_win_width_percent = 0.8
+let s:denite_win_height_percent = 0.6
+
+" Change denite default options
+call denite#custom#option('default', {
+    \ 'split': 'floating',
+    \ 'winwidth': &columns * s:denite_win_width_percent,
+    \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
+    \ 'winheight': &lines * s:denite_win_height_percent,
+    \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
+    \ })
 '''
 hook_post_source = '''
 if call dein#check_install('denite.nvim')

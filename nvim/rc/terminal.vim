@@ -1,10 +1,11 @@
 if has('win64')
-    set shell=cmd.exe
-    set shellcmdflag=-NoProfile\ -NoLogo\ -NonInteractive\ -Command
-    set shellpipe=|
-    set shellredir=>
-
+    set shell=C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+    set shellcmdflag=-NoLogo\ -Command
+    set shellquote=\"
+    set shellxquote=
     source $VIMRUNTIME/mswin.vim
+elseif has('unix')
+    set shell=/bin/bash\ -l\ -O\ expand_aliases
 endif
 
 " Open terminal on new buffer
@@ -43,4 +44,5 @@ function! CloseBuf()
     :bd
   endif
 endfunction
-nnoremap :q :up<CR>:call CloseBuf()<CR>
+nnoremap :q<CR> :up<CR>:call CloseBuf()<CR>
+cnoremap :q<CR> :up<CR>:call CloseBuf()<CR>
