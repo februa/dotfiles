@@ -31,7 +31,6 @@ let g:deoplete#sources#jedi#show_docstring=1
 # 補完 {{{
 [[plugins]]
 repo = 'Shougo/deoplete.nvim'
-depends = 'context_filetype.vim'
 on_i = 1
 hook_add = '''
     let g:deoplete#enable_at_startup = 1
@@ -71,19 +70,19 @@ depends = ['neosnippet-snippets']
 [[plugins]]
 repo = 'Shougo/neosnippet-snippets'
 
+[[plugins]]
+repo = 'ncm2/float-preview.nvim'
+
 # }}}
 [[plugins]]
 repo = 'lervag/vimtex'
 on_ft = 'tex'
 hook_post_source = '''
-if call dein#check_install('deoplete.nvim')
-    call deoplete#custom#var('omni', 'input_patterns', {
-        \ 'tex': g:vimtex#re#deoplete
-        \})
-endif
+call deoplete#custom#var('omni', 'input_patterns', {
+    \ 'tex': g:vimtex#re#deoplete
+    \})
 '''
 hook_add = '''
-
 if has('mac')
   let g:vimtex_view_method='skim'
 elseif has('win64')
