@@ -96,6 +96,11 @@ on_ft = 'toml'
 [[plugins]]
 repo = 'Townk/vim-autoclose'
 
+[[plugins]]
+repo = 'lilydjwg/fcitx.vim'
+if = '''has('unix')'''
+on_ft = ['tex','text']
+
 # vim-autosave
 [[plugins]]
 repo = 'vim-scripts/vim-auto-save'
@@ -129,18 +134,20 @@ nnoremap <silent> sP :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR
 nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<CR>
 '''
 hook_post_source = '''
-call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
+if call dein#check_install('denite.nvim')
+    call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
 
-call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
-call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
+    call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
+    call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
 
-call denite#custom#alias('source', 'file_rec/git', 'file_rec')
-call denite#custom#var('file_rec/git', 'command',
-  \ ['git', 'ls-files', '-co', '--exclude-standard'])
+    call denite#custom#alias('source', 'file_rec/git', 'file_rec')
+    call denite#custom#var('file_rec/git', 'command',
+    \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
-call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
-call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
-call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
+    call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
+    call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
+    call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
+endif
 '''
 [[plugins]]
 repo = 'nixprime/cpsm'
@@ -148,12 +155,10 @@ build = 'env PY3=ON ./install.sh'
 [[plugins]]
 repo = 'tpope/vim-fugitive'
 hook_add = '''
-nmap [fugitive] <Nop>
-map g [fugitive]
-nmap <silent> [fugitive]s :<C-u>Gstatus<CR>
-nmap <silent> [fugitive]d :<C-u>Gdiff<CR>
-nmap <silent> [fugitive]b :<C-u>Gblame<CR>
-nmap <silent> [fugitive]l :<C-u>Glog<CR>
+nmap <silent> gs :<C-u>Gstatus<CR>
+nmap <silent> gd :<C-u>Gdiff<CR>
+nmap <silent> gb :<C-u>Gblame<CR>
+nmap <silent> gl :<C-u>Glog<CR>
 '''
 [[plugins]]
 repo = 'airblade/vim-gitgutter'
