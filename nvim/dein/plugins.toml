@@ -96,6 +96,11 @@ on_ft = 'toml'
 [[plugins]]
 repo = 'Townk/vim-autoclose'
 
+[[plugins]]
+repo = 'lilydjwg/fcitx.vim'
+if = '''has('unix')'''
+on_ft = ['tex','text']
+
 # vim-autosave
 [[plugins]]
 repo = 'vim-scripts/vim-auto-save'
@@ -131,28 +136,30 @@ nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<
 let s:denite_win_width_percent = 0.8
 let s:denite_win_height_percent = 0.6
 
-" Change denite default options
-call denite#custom#option('default', {
-    \ 'split': 'floating',
-    \ 'winwidth': &columns * s:denite_win_width_percent,
-    \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
-    \ 'winheight': &lines * s:denite_win_height_percent,
-    \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
-    \ })
 '''
 hook_post_source = '''
-call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
+if !dein#check_install('denite.nvim')
+    " Change denite default options
+    call denite#custom#option('default', {
+        \ 'split': 'floating',
+        \ 'winwidth': &columns * s:denite_win_width_percent,
+        \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
+        \ 'winheight': &lines * s:denite_win_height_percent,
+        \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
+        \ })
+    call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
 
-call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
-call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
+    call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
+    call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
 
-call denite#custom#alias('source', 'file_rec/git', 'file_rec')
-call denite#custom#var('file_rec/git', 'command',
-  \ ['git', 'ls-files', '-co', '--exclude-standard'])
+    call denite#custom#alias('source', 'file_rec/git', 'file_rec')
+    call denite#custom#var('file_rec/git', 'command',
+    \ ['git', 'ls-files', '-co', '--exclude-standard'])
 
-call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
-call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
-call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
+    call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
+    call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
+    call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
+endif
 '''
 [[plugins]]
 repo = 'nixprime/cpsm'
