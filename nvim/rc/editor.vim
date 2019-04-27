@@ -21,6 +21,8 @@ set nohlsearch
 " Searches wrap around the end of the file.
 set wrapscan
 
+set inccommand=split
+
 " Edit:
 filetype plugin indent on
 " Smart insert tab setting.
