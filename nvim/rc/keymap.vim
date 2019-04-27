@@ -22,6 +22,7 @@ xnoremap < <gv
 nnoremap ZZ  <Nop>
 " Easy escape.
 inoremap jj  <ESC>
+inoremap っｊ <ESC>
 cnoremap <expr> j
       \ getcmdline()[getcmdpos()-2] ==# 'j' ? "\<BS>\<C-c>" : 'j'
 inoremap j<Space>    j

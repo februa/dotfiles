@@ -31,7 +31,6 @@ let g:deoplete#sources#jedi#show_docstring=1
 # 補完 {{{
 [[plugins]]
 repo = 'Shougo/deoplete.nvim'
-depends = 'context_filetype.vim'
 on_i = 1
 hook_add = '''
     let g:deoplete#enable_at_startup = 1
@@ -71,49 +70,32 @@ depends = ['neosnippet-snippets']
 [[plugins]]
 repo = 'Shougo/neosnippet-snippets'
 
+[[plugins]]
+repo = 'ncm2/float-preview.nvim'
+
 # }}}
 [[plugins]]
 repo = 'lervag/vimtex'
 on_ft = 'tex'
+if = '''has('unix') || has('mac')'''
 hook_post_source = '''
-" This is new style
 call deoplete#custom#var('omni', 'input_patterns', {
-        \ 'tex': g:vimtex#re#deoplete
-        \})
+    \ 'tex': g:vimtex#re#deoplete
+    \})
 '''
 hook_add = '''
-" This is old style (deprecated)
-" if !exists('g:deoplete#omni#input_patterns')
-"     let g:deoplete#omni#input_patterns = {}
-" endif
-
 if has('mac')
-  let g:vimtex_view_method='skim'
+  let g:vimtex_view_general_viewer='skim'
 elseif has('win64')
-  let g:vimtex_view_method='C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe'
+  let g:vimtex_view_general_viewer='C:\Program Files (x86)\Adobe\Acrobat Reader DC\Reader\AcroRd32.exe'
 else
-  let g:vimtex_view_method='zathura'
+  let g:vimtex_view_general_viewer='evince'
 endif
 if has('nvim')
   let g:vimtex_compiler_progname
         \ = 'nvr'
 endif
-"
-" let g:vimtex_compiler_latexmk = {
-"      \ 'background': 1,
-"      \ 'build_dir': '',
-"      \ 'continuous': 1,
-"      \ 'options': [
-"      \    '-pdfdvi',
-"      \    '-verbose',
-"      \    '-file-line-error',
-"      \    '-synctex=1',
-"      \    '-interaction=nonstopmode',
-"      \],
-"      \}
-let g:vimtex_view_general_viewer
-      \ = g:vimtex_view_method
-let g:vimtex_view_general_options = '-r @line @pdf @tex'
+let g:vimtex_fold_manual = 1
 '''
 
 [[plugins]]
