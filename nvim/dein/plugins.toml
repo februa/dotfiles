@@ -20,12 +20,12 @@ repo = 'Shougo/context_filetype.vim'
 repo = 'w0rp/ale'
 hook_add = '''
 let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   '*': ['trim_whitespace'],
 \   'python': ['autopep8', 'black', 'isort'],
 \   'tex': ['textlint'],
 \}
 let g:ale_linters = {
- \  'tex': ['textlint'],
+ \  'tex': ['textlint']
  \}
 " Set this variable to 1 to fix files when you save them.
 let g:ale_fix_on_save = 1
