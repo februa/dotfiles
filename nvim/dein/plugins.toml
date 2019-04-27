@@ -67,6 +67,21 @@ vmap <Leader>c <Plug>(caw:zeropos:toggle)
 
 [[plugins]]
 repo = 'tpope/vim-surround'
+# 使用可能な引用符など',",[],{},(),その他htmlタグ
+# example: 選択した部分を変更する
+# S' : 選択したテキストを'で囲む
+# S<b> : 選択したテキストを<b>で囲む
+# example: 'や{の間にカーソルがある時
+# ds': カーソル前後の''を消す
+# dst: htmlタグを消す
+# cs'": カーソル前後の''を""に置換する
+# cs"<b>: カーソル前後の""を<b>に置換する
+# example: ノーマルモードでテキスト選択と置換
+# ysaw(: 1単語を()で囲む
+# This is 'a surrounded text'. -> This is 'a ( surrounded ) text'.
+# ysi'(:
+# This is 'a surrounded text'. -> This is '( a surrounded text )'.
+# ysa'(: This is 'a surrounded text'. -> This is( 'a surrounded text' ).
 
 # Toml
 [[plugins]]
