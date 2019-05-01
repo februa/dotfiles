@@ -174,10 +174,6 @@ hook_add = '''set foldtext=FoldCCtext()'''
 repo = 'itchyny/lightline.vim'
 hook_add = '''
 set showtabline=2  " always show tabline
-if has('win64')
-    set guioptions-=e
-    set cmdheight=2
-endif
 " remap arrow keys
 nnoremap <Left> :bprev<CR>
 nnoremap <Right> :bnext<CR>
@@ -193,10 +189,7 @@ let g:lightline = {
       \         ]
       \ },
       \ 'tabline': {
-      \   'left': [ [ 'bufferinfo' ],
-      \             [ 'separator' ],
-      \             [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
-      \   'right': [ [ 'close' ], ],
+      \   'left': [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
       \ },
       \ 'component_visible_condition': {
             \'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
@@ -354,24 +347,12 @@ repo = 'taohexxx/lightline-buffer'
 depends = 'itchyny/lightline.vim'
 hook_add = '''
 " lightline-buffer ui settings
-" replace these symbols with ascii characters if your environment does not support unicode
-let g:lightline_buffer_logo = ' '
-let g:lightline_buffer_readonly_icon = ''
-let g:lightline_buffer_modified_icon = '✭'
-let g:lightline_buffer_git_icon = ' '
-let g:lightline_buffer_ellipsis_icon = '..'
-let g:lightline_buffer_expand_left_icon = '◀ '
-let g:lightline_buffer_expand_right_icon = ' ▶'
-let g:lightline_buffer_active_buffer_left_icon = ''
-let g:lightline_buffer_active_buffer_right_icon = ''
-let g:lightline_buffer_separator_icon = '  '
-
 " enable devicons, only support utf-8
 " require <https://github.com/ryanoasis/vim-devicons>
 let g:lightline_buffer_enable_devicons = 1
 
 " lightline-buffer function settings
-let g:lightline_buffer_show_bufnr = 1
+let g:lightline_buffer_show_bufnr = 0
 
 " :help filename-modifiers
 let g:lightline_buffer_fname_mod = ':t'
