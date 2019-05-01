@@ -1,5 +1,5 @@
 set gdefault
-set hidden
+set hidden  " allow buffer switching without saving
 set clipboard=unnamedplus
 set undofile
 set swapfile
@@ -41,6 +41,4 @@ set shiftround
 set autoindent smartindent
 
 set nosplitbelow
-if has('win64')
-    set showtabline=0
-endif
+
