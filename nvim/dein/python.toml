@@ -72,7 +72,10 @@ repo = 'Shougo/neosnippet-snippets'
 
 [[plugins]]
 repo = 'ncm2/float-preview.nvim'
-
+hook_add = '''
+let g:float_preview#docked = 1
+set completeopt+=menu
+'''
 # }}}
 [[plugins]]
 repo = 'lervag/vimtex'

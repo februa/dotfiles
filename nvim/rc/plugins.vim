@@ -29,7 +29,7 @@ call dein#begin(s:dein_dir, expand('<sfile>'))
 
 call s:load_plugin('plugins', 0)
 call s:load_plugin('colors', 0)
-call s:load_plugin('lazy', 1)
+call s:load_plugin('ftplugins', 1)
 if has('python3')
     call s:load_plugin('python', 1)
 endif

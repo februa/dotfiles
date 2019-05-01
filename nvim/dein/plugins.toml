@@ -10,22 +10,68 @@ if has('win64')
 endif
 '''
 
-[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
-repo = 'osyo-manga/vim-precious'
-depends = ['context_filetype.vim']
 
-[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
-repo = 'Shougo/context_filetype.vim'
+[[plugins]]
+repo = 'kassio/neoterm'
+hook_add = '''
+cnoremap (keymapping) T (command)<CR>
+cnoremap (keymapping) T (command)<CR><C-w>j
+'''
+[[plugins]]
+repo = 'tyru/caw.vim'
+hook_add = '''
+" 行の最初の文字の前にコメント文字をトグル
+nmap <Leader>, <Plug>(caw:hatpos:toggle)
+vmap <Leader>, <Plug>(caw:hatpos:toggle)
+" 行頭にコメントをトグル
+nmap <Leader>c <Plug>(caw:zeropos:toggle)
+vmap <Leader>c <Plug>(caw:zeropos:toggle)
+'''
+
+# vim-autoclose
+[[plugins]]
+repo = 'Townk/vim-autoclose'
+
+# vim-autosave {{{
+[[plugins]]
+repo = 'vim-scripts/vim-auto-save'
+hook_add = '''
+let g:auto_save = 1
+let g:auto_save_in_insert_mode = 0
+let g:auto_save_no_updatetime = 1
+let g:auto_save_silent = 1
+'''
+# }}}
+# vim-surround {{{
+[[plugins]]
+repo = 'tpope/vim-surround'
+# 使用可能な引用符など',",[],{},(),その他htmlタグ
+# example: 選択した部分を変更する
+# S' : 選択したテキストを'で囲む
+# S<b> : 選択したテキストを<b>で囲む
+# example: 'や{の間にカーソルがある時
+# ds': カーソル前後の''を消す
+# dst: htmlタグを消す
+# cs'": カーソル前後の''を""に置換する
+# cs"<b>: カーソル前後の""を<b>に置換する
+# example: ノーマルモードでテキスト選択と置換
+# ysaw(: 1単語を()で囲む
+# This is 'a surrounded text'. -> This is 'a ( surrounded ) text'.
+# ysi'(:
+# This is 'a surrounded text'. -> This is '( a surrounded text )'.
+# ysa'(: This is 'a surrounded text'. -> This is( 'a surrounded text' ).
+# }}}
+# ale {{{
 [[plugins]]
 repo = 'w0rp/ale'
 hook_add = '''
 let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   '*': ['trim_whitespace'],
 \   'python': ['autopep8', 'black', 'isort'],
 \   'tex': ['textlint'],
 \}
 let g:ale_linters = {
- \  'tex': ['textlint'],
+ \  'tex': ['textlint']
  \}
 " Set this variable to 1 to fix files when you save them.
 let g:ale_fix_on_save = 1
@@ -47,50 +93,7 @@ let g:ale_lint_on_save = 1
 " let g:ale_open_list = 0
 " let g:ale_keep_list_window_open = 0
 '''
-
-[[plugins]]
-repo = 'kassio/neoterm'
-hook_add = '''
-cnoremap (keymapping) T (command)<CR>
-cnoremap (keymapping) T (command)<CR><C-w>j
-'''
-[[plugins]]
-repo = 'tyru/caw.vim'
-hook_add = '''
-" 行の最初の文字の前にコメント文字をトグル
-nmap <Leader>, <Plug>(caw:hatpos:toggle)
-vmap <Leader>, <Plug>(caw:hatpos:toggle)
-" 行頭にコメントをトグル
-nmap <Leader>c <Plug>(caw:zeropos:toggle)
-vmap <Leader>c <Plug>(caw:zeropos:toggle)
-'''
-
-[[plugins]]
-repo = 'tpope/vim-surround'
-
-# Toml
-[[plugins]]
-repo  = 'cespare/vim-toml'
-on_ft = 'toml'
-
-# vim-autoclose
-[[plugins]]
-repo = 'Townk/vim-autoclose'
-
-[[plugins]]
-repo = 'lilydjwg/fcitx.vim'
-if = '''has('unix')'''
-on_ft = ['tex','text']
-
-# vim-autosave
-[[plugins]]
-repo = 'vim-scripts/vim-auto-save'
-hook_add = '''
-let g:auto_save = 1
-let g:auto_save_in_insert_mode = 0
-let g:auto_save_no_updatetime = 1
-let g:auto_save_silent = 1
-'''
+# }}}
 # NERD Tree {{{
 [[plugins]]
 repo = 'scrooloose/nerdtree'
@@ -119,18 +122,18 @@ nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<
 
 let s:denite_win_width_percent = 0.8
 let s:denite_win_height_percent = 0.6
+" Change denite default options
+call denite#custom#option('default', {
+    \ 'split': 'floating',
+    \ 'winwidth': &columns * s:denite_win_width_percent,
+    \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
+    \ 'winheight': &lines * s:denite_win_height_percent,
+    \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
+    \ })
 
 '''
 hook_post_source = '''
 if !dein#check_install('denite.nvim')
-    " Change denite default options
-    call denite#custom#option('default', {
-        \ 'split': 'floating',
-        \ 'winwidth': &columns * s:denite_win_width_percent,
-        \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
-        \ 'winheight': &lines * s:denite_win_height_percent,
-        \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
-        \ })
     call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
 
     call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
@@ -167,24 +170,52 @@ repo = 'LeafCage/foldCC'
 hook_add = '''set foldtext=FoldCCtext()'''
 # }}}
 # lightline.vim {{{
-[[plugins]] repo = 'itchyny/lightline.vim'
+[[plugins]]
+repo = 'itchyny/lightline.vim'
 hook_add = '''
+set showtabline=2  " always show tabline
+" remap arrow keys
+nnoremap <Left> :bprev<CR>
+nnoremap <Right> :bnext<CR>
 let g:lightline = {
       \'colorscheme': 'nord',
       \'active': {
-            \'left': [['prepare', 'mode', 'filename'], ['fugitive']],
-            \'right': [['lineinfo'], ['fileinfo'], ['ale']]},
-      \'component_visible_condition': {
+      \'left':  [ ['prepare', 'mode', 'filename'],
+      \           ['fugitive']
+      \         ],
+      \'right': [ ['lineinfo'],
+      \           ['fileinfo'],
+      \           ['ale']
+      \         ]
+      \ },
+      \ 'tabline': {
+      \   'left': [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+      \ },
+      \ 'component_visible_condition': {
             \'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
-      \'component_function': {
-            \'prepare': 'LLPrepare',
-            \'mode': 'LLMode',
-            \'filename': 'LLFileName',
-            \'fugitive': 'LLFugitive',
-            \'fileinfo': 'LLFileInfo',
-            \'lineinfo': 'LLLineInfo',
-            \'ale': 'LLAle',
-            \},
+      \ 'component_expand': {
+      \   'buffercurrent': 'lightline#buffer#buffercurrent',
+      \   'bufferbefore': 'lightline#buffer#bufferbefore',
+      \   'bufferafter': 'lightline#buffer#bufferafter',
+      \ },
+      \ 'component_type': {
+      \   'buffercurrent': 'tabsel',
+      \   'bufferbefore': 'raw',
+      \   'bufferafter': 'raw',
+      \ },
+      \ 'component_function': {
+      \    'prepare': 'LLPrepare',
+      \    'mode': 'LLMode',
+      \    'filename': 'LLFileName',
+      \    'fugitive': 'LLFugitive',
+      \    'fileinfo': 'LLFileInfo',
+      \    'lineinfo': 'LLLineInfo',
+      \    'ale': 'LLAle',
+      \    'bufferinfo': 'lightline#buffer#bufferinfo',
+      \ },
+      \ 'component': {
+      \   'separator': '',
+      \ },
       \ 'separator': { 'left': '', 'right': '' },
       \ 'subseparator': { 'left': '', 'right': '' }
       \}
@@ -309,5 +340,39 @@ else
     return ''
   endfunction
 endif
+
+'''
+[[plugins]]
+repo = 'taohexxx/lightline-buffer'
+depends = 'itchyny/lightline.vim'
+hook_add = '''
+" lightline-buffer ui settings
+" enable devicons, only support utf-8
+" require <https://github.com/ryanoasis/vim-devicons>
+let g:lightline_buffer_enable_devicons = 1
+
+" lightline-buffer function settings
+let g:lightline_buffer_show_bufnr = 0
+
+" :help filename-modifiers
+let g:lightline_buffer_fname_mod = ':t'
+
+" hide buffer list
+let g:lightline_buffer_excludes = ['vimfiler']
+
+" max file name length
+let g:lightline_buffer_maxflen = 30
+
+" max file extension length
+let g:lightline_buffer_maxfextlen = 3
+
+" min file name length
+let g:lightline_buffer_minflen = 16
+
+" min file extension length
+let g:lightline_buffer_minfextlen = 3
+
+" reserve length for other component (e.g. info, close)
+let g:lightline_buffer_reservelen = 20
 '''
 # }}}

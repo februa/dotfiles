@@ -1,0 +1,22 @@
+# Toml
+[[plugins]]
+repo  = 'cespare/vim-toml'
+on_ft = 'toml'
+
+# Highlight HTML tags
+[[plugins]]
+repo = 'Valloric/MatchTagAlways'
+on_ft = 'html'
+
+# Insert->Normalの時に自動的に日本語入力をローマ字入力に切り替える
+[[plugins]]
+repo = 'lilydjwg/fcitx.vim'
+if = '''has('unix')'''
+on_ft = ['tex','text']
+
+[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
+repo = 'osyo-manga/vim-precious'
+depends = ['context_filetype.vim']
+
+[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'

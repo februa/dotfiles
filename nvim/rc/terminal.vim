@@ -38,7 +38,7 @@ endfunction
 function! CloseBuf()
   if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
     :q
-  elseif bufname('$') =~ "^term"
+  elseif &buftype == 'terminal'
     :bn
   else
     :bd
