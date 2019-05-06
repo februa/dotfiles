@@ -25,7 +25,6 @@ set wrapscan
 set inccommand=split
 
 " Edit:
-filetype plugin indent on
 " Smart insert tab setting.
 set smarttab
 " Exchange tab to spaces.
@@ -40,5 +39,6 @@ set shiftwidth=4
 set shiftround
 " Enable smart indent.
 set autoindent smartindent
+set showtabline=2  " always show tabline
 
 set nosplitbelow
