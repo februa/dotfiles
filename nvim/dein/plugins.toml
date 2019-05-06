@@ -10,13 +10,6 @@ if has('win64')
 endif
 '''
 
-
-[[plugins]]
-repo = 'kassio/neoterm'
-hook_add = '''
-cnoremap (keymapping) T (command)<CR>
-cnoremap (keymapping) T (command)<CR><C-w>j
-'''
 [[plugins]]
 repo = 'tyru/caw.vim'
 hook_add = '''
@@ -107,6 +100,27 @@ nnoremap <C-n> :NERDTreeToggle<CR>
 autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (&filetype == 'nerdtree') | quit | endif
 '''
 # }}}
+# undotree.vim {{{
+[[plugins]]
+repo = 'mbbill/undotree'
+hook_add = '''
+let g:undotree_WindowLayout = 2         " undotreeは左側/diffは下にウィンドウ幅で表示
+let g:undotree_ShortIndicators = 1      " 時間単位は短く表示
+let g:undotree_SplitWidth = 30          " undotreeのウィンドウ幅
+let g:undotree_SetFocusWhenToggle = 1   " undotreeを開いたらフォーカスする
+"let g:undotree_DiffAutoOpen = 0         " diffウィンドウは起動時無効
+let g:undotree_DiffpanelHeight = 8      " diffウィンドウの行数
+"let g:undotree_HighlightChangedText = 0 " 変更箇所のハイライト無効
+" undotreeをトグル表示
+noremap <C-u> :UndotreeToggle<CR>
+
+" undotreeバッファ内でのキーバインド設定
+function! g:Undotree_CustomMap()
+    map <silent> <buffer> <Esc> q
+    map <silent> <buffer> h ?
+endfunction
+'''
+# }}}
 # denite nvim {{{
 [[plugins]]
 repo = 'Shougo/denite.nvim'
@@ -173,10 +187,7 @@ hook_add = '''set foldtext=FoldCCtext()'''
 [[plugins]]
 repo = 'itchyny/lightline.vim'
 hook_add = '''
-set showtabline=2  " always show tabline
-" remap arrow keys
-nnoremap <Left> :bprev<CR>
-nnoremap <Right> :bnext<CR>
+
 let g:lightline = {
       \'colorscheme': 'nord',
       \'active': {
@@ -190,6 +201,7 @@ let g:lightline = {
       \ },
       \ 'tabline': {
       \   'left': [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+      \   'right': [ [ 'close' ], ]
       \ },
       \ 'component_visible_condition': {
             \'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
@@ -375,4 +387,8 @@ let g:lightline_buffer_minfextlen = 3
 " reserve length for other component (e.g. info, close)
 let g:lightline_buffer_reservelen = 20
 '''
+
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+hook_add = '''set encoding=UTF-8'''
 # }}}

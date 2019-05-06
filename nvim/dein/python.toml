@@ -1,4 +1,4 @@
-# jedi vim python completion {{{
+# jedi vim python completion
 [[plugins]]
 repo = 'davidhalter/jedi-vim'
 on_ft = 'python'
@@ -15,11 +15,10 @@ let g:jedi#goto_definitions_command = ""
 let g:jedi#documentation_command = "K"
 let g:jedi#usages_command = "<leader>n"
 let g:jedi#rename_command = "<leader>r"
-" I don't want the docstring window to popup during completion
-" autocmd FileType python setlocal completeopt-=preview
 '''
 [[plugins]]
 repo = 'deoplete-plugins/deoplete-jedi'
+depends = 'Shougo/deoplete.nvim'
 on_ft = 'python'
 hook_add = '''
 let g:deoplete#sources#jedi#server_timeout=100
@@ -27,8 +26,6 @@ let g:deoplete#sources#jedi#statement_length=100
 let g:deoplete#sources#jedi#show_docstring=1
 '''
 
-# }}}
-# 補完 {{{
 [[plugins]]
 repo = 'Shougo/deoplete.nvim'
 on_i = 1
@@ -48,10 +45,9 @@ hook_add = '''
     inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
 
     inoremap <expr><tab> pumvisible() ? "\<C-n>" : neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : "\<tab>"
-let g:deoplete#enable_at_startup = 1
-if has('python3') && has('win64')
-    let g:python3_host_prog = 'C:\Users\febru\AppData\Local\Programs\Python\Python37\python.exe'
-endif
+    if has('python3') && has('win64')
+        let g:python3_host_prog = expand('$HOME\AppData\Local\Programs\Python\Python37\python.exe')
+    endif
 '''
 [[plugins]]
 repo = 'Shougo/neosnippet'
@@ -74,7 +70,7 @@ repo = 'Shougo/neosnippet-snippets'
 repo = 'ncm2/float-preview.nvim'
 hook_add = '''
 let g:float_preview#docked = 1
-set completeopt+=menu
+set completeopt=menu,preview,noinsert
 '''
 # }}}
 [[plugins]]
@@ -101,6 +97,3 @@ endif
 let g:vimtex_fold_manual = 1
 '''
 
-[[plugins]]
-repo = 'Vimjas/vim-python-pep8-indent'
-on_ft = 'python'
