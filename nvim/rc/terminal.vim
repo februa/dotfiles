@@ -36,7 +36,7 @@ function! OnExit(job_id, code, event)
 endfunction
 
 function! CloseBuf()
-  if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
+  if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1 || winnr('$') > 1
     :q
   elseif &buftype == 'terminal'
     :bn
@@ -45,4 +45,4 @@ function! CloseBuf()
   endif
 endfunction
 nnoremap :q<CR> :up<CR>:call CloseBuf()<CR>
-cnoremap :q<CR> :up<CR>:call CloseBuf()<CR>
+cnoremap  q<CR>  up<CR>:call CloseBuf()<CR>

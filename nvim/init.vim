@@ -1,7 +1,3 @@
-if &compatible
-  set nocompatible
-endif
-
 " reset augroup
 augroup MyAutoCmd
     autocmd!

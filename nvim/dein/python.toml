@@ -70,7 +70,6 @@ repo = 'Shougo/neosnippet-snippets'
 repo = 'ncm2/float-preview.nvim'
 hook_add = '''
 let g:float_preview#docked = 1
-set completeopt=menu,preview,noinsert
 '''
 # }}}
 [[plugins]]

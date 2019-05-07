@@ -1,7 +1,7 @@
 " Enable folding.
 set foldenable
-au FileType vim,toml,dockerfile setlocal foldmethod=marker
-au FileType text setlocal foldmethod=indent
+autocmd MyAutoCmd FileType vim,toml,dockerfile setlocal foldmethod=marker
+autocmd MyAutoCmd FileType text setlocal foldmethod=indent
 " FastFold
 autocmd MyAutoCmd TextChangedI,TextChanged *
       \ if &l:foldenable && &l:foldmethod !=# 'manual' |

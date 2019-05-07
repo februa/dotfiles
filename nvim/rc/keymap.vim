@@ -1,5 +1,18 @@
+" :map   :noremap  :unmap     ノーマル、ビジュアル、選択、オペレータ待機
+" :nmap  :nnoremap :nunmap    ノーマル
+" :vmap  :vnoremap :vunmap    ビジュアル、選択
+" :smap  :snoremap :sunmap    選択
+" :xmap  :xnoremap :xunmap    ビジュアル
+" :omap  :onoremap :ounmap    オペレータ待機
+" :map!  :noremap! :unmap!    挿入、コマンドライン
+" :imap  :inoremap :iunmap    挿入
+" :lmap  :lnoremap :lunmap    挿入、コマンドライン、Lang-Arg
+" :cmap  :cnoremap :cunmap    コマンドライン
+" :tmap  :tnoremap :tunmap    端末ジョブ
+
+
 let mapleader = "\\"
-noremap j gj
+nnoremap j gj
 nnoremap k gk
 vnoremap j gj
 vnoremap k gk
@@ -22,11 +35,8 @@ xnoremap < <gv
 nnoremap ZZ  <Nop>
 " Easy escape.
 inoremap jj  <ESC>
-inoremap っｊ <ESC>
 cnoremap <expr> j
       \ getcmdline()[getcmdpos()-2] ==# 'j' ? "\<BS>\<C-c>" : 'j'
-inoremap j<Space>    j
-
 nnoremap s <Nop>
 nnoremap sj <C-w>j
 nnoremap sk <C-w>k
@@ -45,5 +55,4 @@ nnoremap sp :<C-u>bp<CR>
 nnoremap st :<C-u>tabnew<CR>
 nnoremap ss :<C-u>sp<CR>
 nnoremap sv :<C-u>vs<CR>
-nnoremap sq :<C-u>q<CR>
-nnoremap sQ :<C-u>bd<CR>
+nmap sq :q<CR>
