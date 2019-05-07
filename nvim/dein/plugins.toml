@@ -1,4 +1,5 @@
 [[plugins]]
+
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
@@ -9,6 +10,34 @@ if has('win64')
     let g:vimproc#download_windows_dll = 1
 endif
 '''
+
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+if = '''has('unix')'''
+hook_add = '''
+" vim-devicons
+let g:webdevicons_conceal_nerdtree_brackets = 1
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+
+" dir-icons
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
+let g:WebDevIconsUnicodeDecorateFolderNodesDefaultSymbol = ''
+let g:DevIconsDefaultFolderOpenSymbol = ''
+" file-icons
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['html'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
+'''
+
+[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
+repo = 'osyo-manga/vim-precious'
+depends = ['context_filetype.vim']
+
+[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'
 
 [[plugins]]
 repo = 'tyru/caw.vim'
@@ -35,6 +64,29 @@ let g:auto_save_no_updatetime = 1
 let g:auto_save_silent = 1
 '''
 # }}}
+
+[[plugins]]  # j,k キーでカーソル移動の高速化
+repo = 'rhysd/accelerated-jk'
+hook_add = '''
+" j,kにキーマッピング
+nmap j <Plug>(accelerated_jk_gj)
+nmap k <Plug>(accelerated_jk_gk)
+'''
+
+[[plugins]]  # sキーで特定文字へカーソルジャンプ
+repo = 'easymotion/vim-easymotion'
+hook_add = '''
+let g:EasyMotion_do_mapping = 0
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0
+let g:EasyMotion_keys = 'ASDFGHJKL'
+let g:EasyMotion_use_upper = 1
+let g:EasyMotion_enter_jump_first = 1
+nmap sf <Plug>(easymotion-s2)
+xmap sf <Plug>(easymotion-s2)
+omap sf <Plug>(easymotion-s2)
+'''
+
 # vim-surround {{{
 [[plugins]]
 repo = 'tpope/vim-surround'
@@ -94,10 +146,25 @@ hook_add = '''
 let g:NERDTreeShowBookmarks=1
 let g:NERDTreeShowHidden=1
 let g:NERDTreeQuitOnOpen=1
+let g:NERDTreeMouseMode=2
+let g:NERDTreeDirArrows=0
 let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
-nnoremap <C-n> :NERDTreeToggle<CR>
+" nnoremap <C-n> :NERDTreeToggle<CR>
 " Auto-close nerdtree window
-autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (&filetype == 'nerdtree') | quit | endif
+" autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (&filetype == 'nerdtree') && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 0 | quit | endif
+'''
+[[plugins]]
+repo = 'tiagofumo/vim-nerdtree-syntax-highlight'
+on_ft = 'nerdtree'
+depends = 'nerdtree'
+hook_add = '''
+let g:NERDTreeLimitedSyntax = 1
+'''
+
+[[plugins]]
+repo = 'jistr/vim-nerdtree-tabs'
+hook_add = '''
+nmap <C-n> <plug>NERDTreeTabsToggle<CR>
 '''
 # }}}
 # undotree.vim {{{
@@ -130,24 +197,26 @@ hook_add = '''
 nnoremap <silent> sN :<C-u>DeniteBufferDir
       \ -direction=topleft -cursor-wrap=true file file:new<CR>
 "バッファ一覧
-nnoremap <silent> sP :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR>
+nnoremap <silent> s; :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR>
 "最近使用したファイル一覧
 nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<CR>
 
 let s:denite_win_width_percent = 0.8
 let s:denite_win_height_percent = 0.6
 " Change denite default options
-call denite#custom#option('default', {
-    \ 'split': 'floating',
-    \ 'winwidth': &columns * s:denite_win_width_percent,
-    \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
-    \ 'winheight': &lines * s:denite_win_height_percent,
-    \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
-    \ })
+if dein#tap('denite.nvim')
+    call denite#custom#option('default', {
+        \ 'split': 'floating',
+        \ 'winwidth': &columns * s:denite_win_width_percent,
+        \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
+        \ 'winheight': &lines * s:denite_win_height_percent,
+        \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
+        \ })
+endif
 
 '''
 hook_post_source = '''
-if !dein#check_install('denite.nvim')
+if dein#tap('denite.nvim')
     call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
 
     call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
@@ -189,7 +258,6 @@ repo = 'itchyny/lightline.vim'
 hook_add = '''
 
 let g:lightline = {
-      \'colorscheme': 'nord',
       \'active': {
       \'left':  [ ['prepare', 'mode', 'filename'],
       \           ['fugitive']
@@ -200,11 +268,10 @@ let g:lightline = {
       \         ]
       \ },
       \ 'tabline': {
-      \   'left': [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
-      \   'right': [ [ 'close' ], ]
+      \ 'left':  [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
       \ },
       \ 'component_visible_condition': {
-            \'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
+      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
       \ 'component_expand': {
       \   'buffercurrent': 'lightline#buffer#buffercurrent',
       \   'bufferbefore': 'lightline#buffer#bufferbefore',
@@ -221,17 +288,18 @@ let g:lightline = {
       \    'filename': 'LLFileName',
       \    'fugitive': 'LLFugitive',
       \    'fileinfo': 'LLFileInfo',
-      \    'lineinfo': 'LLLineInfo',
       \    'ale': 'LLAle',
       \    'bufferinfo': 'lightline#buffer#bufferinfo',
+      \    'readonly': 'LightlineReadonly',
       \ },
-      \ 'component': {
-      \   'separator': '',
-      \ },
-      \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
       \}
+let g:lightline.colorscheme = 'nord'
 let g:lightline.inactive = g:lightline.active
+let g:lightline.subseparator = { 'left': '', 'right': '' }
+let g:lightline.component = {
+        \ 'separator': '',
+        \ 'lineinfo': ' %3l:%-2v',
+        \ }
 let g:lightline.tab = {
       \ 'active': [ 'tabnum', 'filename', 'modified' ],
       \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
@@ -242,7 +310,13 @@ let g:lightline.tab_component_function = {
       \ 'modified': 'lightline#tab#modified',
       \ 'readonly': 'lightline#tab#readonly',
       \ 'tabnum': 'lightline#tab#tabnum' }
-
+" lightline functions {{{
+function! LLFugitive()
+  return g:ll_fugitive
+endfunction
+function! LightlineReadonly()
+    return &readonly ? '' : ''
+endfunction
 function! LLTabFilename(n) abort
   let buflist = tabpagebuflist(a:n)
   let winnr = tabpagewinnr(a:n)
@@ -253,7 +327,6 @@ endfunction
 function! LLPrepare()
   let g:ll_mode = ''
   let g:ll_filename = ''
-  let g:ll_fugitive = ''
   let g:ll_lineinfo = ''
   let g:ll_ale = ''
 
@@ -277,7 +350,7 @@ function! LLPrepare()
     endif
   endif
 
-  let g:ll_filename = expand('%:t') . (&filetype !~? 'help' && &readonly ? ' RO' : '') . (&modifiable && &modified ? ' +' : '')
+  let g:ll_filename = expand('%:t') . (&filetype !~? 'help' && &readonly ? ' ' : '') . (&modifiable && &modified ? ' +' : '')
   if g:ll_filename !=# ''
     let l:total_len += strlen(g:ll_filename) + 2
     if l:ww < l:total_len
@@ -324,9 +397,6 @@ function! LLFileName()
   return g:ll_filename
 endfunction
 
-function! LLFugitive()
-  return g:ll_fugitive
-endfunction
 
 function! LLFileInfo()
   return g:ll_fileinfo
@@ -340,6 +410,7 @@ function! LLAle()
   return g:ll_ale
 endfunction
 
+
 if dein#tap('ale')
   function! LLGetAle()
     let l:count = ale#statusline#Count(bufnr(''))
@@ -352,25 +423,22 @@ else
     return ''
   endfunction
 endif
-
+" }}}
 '''
 [[plugins]]
 repo = 'taohexxx/lightline-buffer'
 depends = 'itchyny/lightline.vim'
 hook_add = '''
 " lightline-buffer ui settings
-" enable devicons, only support utf-8
-" require <https://github.com/ryanoasis/vim-devicons>
-let g:lightline_buffer_enable_devicons = 1
 
 " lightline-buffer function settings
 let g:lightline_buffer_show_bufnr = 0
 
 " :help filename-modifiers
-let g:lightline_buffer_fname_mod = ':t'
+" let g:lightline_buffer_fname_mod = ':t'
 
 " hide buffer list
-let g:lightline_buffer_excludes = ['vimfiler']
+let g:lightline_buffer_excludes = ['denite']
 
 " max file name length
 let g:lightline_buffer_maxflen = 30
@@ -386,9 +454,17 @@ let g:lightline_buffer_minfextlen = 3
 
 " reserve length for other component (e.g. info, close)
 let g:lightline_buffer_reservelen = 20
+if dein#tap('ryanoasis/vim-devicons')
+    let g:lightline_buffer_logo = ' '
+    let g:lightline_buffer_readonly_icon = ''
+    let g:lightline_buffer_modified_icon = '＋'
+    let g:lightline_buffer_git_icon = ' '
+    let g:lightline_buffer_ellipsis_icon = '..'
+    let g:lightline_buffer_expand_left_icon = '◀ '
+    let g:lightline_buffer_expand_right_icon = ' ▶'
+    let g:lightline_buffer_active_buffer_left_icon = ''
+    let g:lightline_buffer_active_buffer_right_icon = ''
+    let g:lightline_buffer_separator_icon = '  '
+endif
 '''
-
-[[plugins]]
-repo = 'ryanoasis/vim-devicons'
-hook_add = '''set encoding=UTF-8'''
 # }}}
