@@ -1,5 +1,4 @@
 [[plugins]]
-
 repo = 'Shougo/dein.vim'
 
 [[plugins]]
@@ -13,7 +12,6 @@ endif
 
 [[plugins]]
 repo = 'ryanoasis/vim-devicons'
-if = '''has('unix')'''
 hook_add = '''
 " vim-devicons
 let g:webdevicons_conceal_nerdtree_brackets = 1
@@ -295,11 +293,14 @@ let g:lightline = {
       \}
 let g:lightline.colorscheme = 'nord'
 let g:lightline.inactive = g:lightline.active
-let g:lightline.subseparator = { 'left': '', 'right': '' }
-let g:lightline.component = {
-        \ 'separator': '',
-        \ 'lineinfo': ' %3l:%-2v',
-        \ }
+if dein#tap('vim-devicons')
+    let g:lightline.separator = { 'left': '', 'right': '' }
+    let g:lightline.subseparator = { 'left': '', 'right': '' }
+    let g:lightline.component = {
+            \ 'separator': '',
+            \ 'lineinfo': ' %3l:%-2v',
+            \ }
+endif
 let g:lightline.tab = {
       \ 'active': [ 'tabnum', 'filename', 'modified' ],
       \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
@@ -454,7 +455,7 @@ let g:lightline_buffer_minfextlen = 3
 
 " reserve length for other component (e.g. info, close)
 let g:lightline_buffer_reservelen = 20
-if dein#tap('ryanoasis/vim-devicons')
+if dein#tap('vim-devicons')
     let g:lightline_buffer_logo = ' '
     let g:lightline_buffer_readonly_icon = ''
     let g:lightline_buffer_modified_icon = '＋'
