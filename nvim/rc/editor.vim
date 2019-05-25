@@ -1,5 +1,6 @@
 set gdefault
 set hidden  " allow buffer switching without saving
+" (ubuntu) sudo apt-get install xsel
 set clipboard+=unnamedplus
 set undofile
 set swapfile

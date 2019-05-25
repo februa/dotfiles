@@ -9,27 +9,18 @@ if has('win64')
     let g:vimproc#download_windows_dll = 1
 endif
 '''
-
-[[plugins]]
-repo = 'ryanoasis/vim-devicons'
-hook_add = '''
-" vim-devicons
-let g:webdevicons_conceal_nerdtree_brackets = 1
-let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
-
-" dir-icons
-let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-let g:DevIconsEnableFoldersOpenClose = 1
-let g:WebDevIconsUnicodeDecorateFolderNodesDefaultSymbol = ''
-let g:DevIconsDefaultFolderOpenSymbol = ''
-" file-icons
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['html'] = ''
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
-let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
+hook_post_update = '''
+  if has('win32')
+    let cmd = 'mingw32-make -f make_mingw64.mak'
+  elseif has('win32unix') " for Cygwin
+    let cmd = 'make -f make_cygwin.mak'
+  elseif executable('gmake')
+    let cmd = 'gmake'
+  else
+    let cmd = 'make'
+  endif
+  let g:dein#plugin.build = cmd
 '''
-
 [[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
 repo = 'osyo-manga/vim-precious'
 depends = ['context_filetype.vim']
@@ -84,6 +75,16 @@ nmap sf <Plug>(easymotion-s2)
 xmap sf <Plug>(easymotion-s2)
 omap sf <Plug>(easymotion-s2)
 '''
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+hook_add = '''
+nmap <silent> gs :<C-u>Gstatus<CR>
+nmap <silent> gd :<C-u>Gdiff<CR>
+nmap <silent> gb :<C-u>Gblame<CR>
+nmap <silent> gl :<C-u>Glog<CR>
+'''
+[[plugins]]
+repo = 'airblade/vim-gitgutter'
 
 # vim-surround {{{
 [[plugins]]
@@ -104,39 +105,6 @@ repo = 'tpope/vim-surround'
 # This is 'a surrounded text'. -> This is '( a surrounded text )'.
 # ysa'(: This is 'a surrounded text'. -> This is( 'a surrounded text' ).
 # }}}
-# ale {{{
-[[plugins]]
-repo = 'w0rp/ale'
-hook_add = '''
-let g:ale_fixers = {
-\   '*': ['trim_whitespace'],
-\   'python': ['autopep8', 'black', 'isort'],
-\   'tex': ['textlint'],
-\}
-let g:ale_linters = {
- \  'tex': ['textlint']
- \}
-" Set this variable to 1 to fix files when you save them.
-let g:ale_fix_on_save = 1
-let g:ale_sign_column_always = 1
-" エラー行にカーソルをあわせた際に表示されるメッセージフォーマット
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" エラー表示の列を常時表示
-let g:ale_sign_column_always = 1
-
-" ファイルを開いたときにlint実行
-let g:ale_lint_on_enter = 1
-" ファイルを保存したときにlint実行
-let g:ale_lint_on_save = 1
-
-" lint結果をロケーションリストとQuickFixには表示しない
-" 出てると結構うざいしQuickFixを書き換えられるのは困る
-" let g:ale_set_loclist = 0
-" let g:ale_set_quickfix = 0
-" let g:ale_open_list = 0
-" let g:ale_keep_list_window_open = 0
-'''
-# }}}
 # NERD Tree {{{
 [[plugins]]
 repo = 'scrooloose/nerdtree'
@@ -147,6 +115,7 @@ let g:NERDTreeQuitOnOpen=1
 let g:NERDTreeMouseMode=2
 let g:NERDTreeDirArrows=0
 let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
+let g:NERDTreeBookmarksFile=''
 " nnoremap <C-n> :NERDTreeToggle<CR>
 " Auto-close nerdtree window
 " autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (&filetype == 'nerdtree') && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 0 | quit | endif
@@ -184,288 +153,5 @@ function! g:Undotree_CustomMap()
     map <silent> <buffer> <Esc> q
     map <silent> <buffer> h ?
 endfunction
-'''
-# }}}
-# denite nvim {{{
-[[plugins]]
-repo = 'Shougo/denite.nvim'
-on_event = 'BufRead'
-hook_add = '''
-"現在開いているファイルのディレクトリ下のファイル一覧。
-nnoremap <silent> sN :<C-u>DeniteBufferDir
-      \ -direction=topleft -cursor-wrap=true file file:new<CR>
-"バッファ一覧
-nnoremap <silent> s; :<C-u>Denite -direction=topleft -cursor-wrap=true buffer<CR>
-"最近使用したファイル一覧
-nnoremap <silent> sm :<C-u>Denite -direction=topleft -cursor-wrap=true file_mru<CR>
-
-let s:denite_win_width_percent = 0.8
-let s:denite_win_height_percent = 0.6
-" Change denite default options
-if dein#tap('denite.nvim')
-    call denite#custom#option('default', {
-        \ 'split': 'floating',
-        \ 'winwidth': &columns * s:denite_win_width_percent,
-        \ 'wincol': (&columns - (&columns * s:denite_win_width_percent)) / 2,
-        \ 'winheight': &lines * s:denite_win_height_percent,
-        \ 'winrow': (&lines - (&lines * s:denite_win_height_percent)) / 2,
-        \ })
-endif
-
-'''
-hook_post_source = '''
-if dein#tap('denite.nvim')
-    call denite#custom#source('file'    , 'matchers', ['matcher_cpsm', 'matcher_fuzzy'])
-
-    call denite#custom#source('buffer'  , 'matchers', ['matcher_regexp'])
-    call denite#custom#source('file_mru', 'matchers', ['matcher_regexp'])
-
-    call denite#custom#alias('source', 'file_rec/git', 'file_rec')
-    call denite#custom#var('file_rec/git', 'command',
-    \ ['git', 'ls-files', '-co', '--exclude-standard'])
-
-    call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
-    call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
-    call denite#custom#map('insert', '<C-W>', '<denite:move_up_path>', 'noremap')
-endif
-'''
-[[plugins]]
-repo = 'nixprime/cpsm'
-build = 'env PY3=ON ./install.sh'
-[[plugins]]
-repo = 'tpope/vim-fugitive'
-hook_add = '''
-nmap <silent> gs :<C-u>Gstatus<CR>
-nmap <silent> gd :<C-u>Gdiff<CR>
-nmap <silent> gb :<C-u>Gblame<CR>
-nmap <silent> gl :<C-u>Glog<CR>
-'''
-[[plugins]]
-repo = 'airblade/vim-gitgutter'
-[[plugins]]
-repo = 'Shougo/neomru.vim'
-# }}}
-# LeafCage/foldCC {{{
-[[plugins]]
-repo = 'LeafCage/foldCC'
-hook_add = '''set foldtext=FoldCCtext()'''
-# }}}
-# lightline.vim {{{
-[[plugins]]
-repo = 'itchyny/lightline.vim'
-hook_add = '''
-
-let g:lightline = {
-      \'active': {
-      \'left':  [ ['prepare', 'mode', 'filename'],
-      \           ['fugitive']
-      \         ],
-      \'right': [ ['lineinfo'],
-      \           ['fileinfo'],
-      \           ['ale']
-      \         ]
-      \ },
-      \ 'tabline': {
-      \ 'left':  [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
-      \ },
-      \ 'component_visible_condition': {
-      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
-      \ 'component_expand': {
-      \   'buffercurrent': 'lightline#buffer#buffercurrent',
-      \   'bufferbefore': 'lightline#buffer#bufferbefore',
-      \   'bufferafter': 'lightline#buffer#bufferafter',
-      \ },
-      \ 'component_type': {
-      \   'buffercurrent': 'tabsel',
-      \   'bufferbefore': 'raw',
-      \   'bufferafter': 'raw',
-      \ },
-      \ 'component_function': {
-      \    'prepare': 'LLPrepare',
-      \    'mode': 'LLMode',
-      \    'filename': 'LLFileName',
-      \    'fugitive': 'LLFugitive',
-      \    'fileinfo': 'LLFileInfo',
-      \    'ale': 'LLAle',
-      \    'bufferinfo': 'lightline#buffer#bufferinfo',
-      \    'readonly': 'LightlineReadonly',
-      \ },
-      \}
-let g:lightline.colorscheme = 'nord'
-let g:lightline.inactive = g:lightline.active
-if dein#tap('vim-devicons')
-    let g:lightline.separator = { 'left': '', 'right': '' }
-    let g:lightline.subseparator = { 'left': '', 'right': '' }
-    let g:lightline.component = {
-            \ 'separator': '',
-            \ 'lineinfo': ' %3l:%-2v',
-            \ }
-endif
-let g:lightline.tab = {
-      \ 'active': [ 'tabnum', 'filename', 'modified' ],
-      \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
-      \ }
-
-let g:lightline.tab_component_function = {
-      \ 'filename': 'LLTabFilename',
-      \ 'modified': 'lightline#tab#modified',
-      \ 'readonly': 'lightline#tab#readonly',
-      \ 'tabnum': 'lightline#tab#tabnum' }
-" lightline functions {{{
-function! LLFugitive()
-  return g:ll_fugitive
-endfunction
-function! LightlineReadonly()
-    return &readonly ? '' : ''
-endfunction
-function! LLTabFilename(n) abort
-  let buflist = tabpagebuflist(a:n)
-  let winnr = tabpagewinnr(a:n)
-  let _ = pathshorten(expand('#'.buflist[winnr - 1].':f'))
-  return _ !=# '' ? _ : '[No Name]'
-endfunction
-
-function! LLPrepare()
-  let g:ll_mode = ''
-  let g:ll_filename = ''
-  let g:ll_lineinfo = ''
-  let g:ll_ale = ''
-
-  let l:ww = winwidth('.')
-  let l:total_len = 0
-
-  let g:ll_mode = lightline#mode() . (&paste ? ' P' : '')
-  if g:ll_mode !=# ''
-    let l:total_len += strlen(g:ll_mode) + 2
-    if l:ww < l:total_len
-      return ''
-    endif
-  endif
-
-  let g:ll_lineinfo = printf('%d/%d:%d', line('.'), line('$'), col('.'))
-  if g:ll_lineinfo !=# ''
-    let l:total_len += strlen(g:ll_lineinfo) + 2
-    if l:ww < l:total_len
-      let g:ll_lineinfo = ''
-      return ''
-    endif
-  endif
-
-  let g:ll_filename = expand('%:t') . (&filetype !~? 'help' && &readonly ? ' ' : '') . (&modifiable && &modified ? ' +' : '')
-  if g:ll_filename !=# ''
-    let l:total_len += strlen(g:ll_filename) + 2
-    if l:ww < l:total_len
-      let g:ll_filename = ''
-      return ''
-    endif
-  endif
-
-  let g:ll_fileinfo = &fileformat . ' ' . (strlen(&fileencoding) ? &fileencoding : &encoding) . ' ' . (strlen(&filetype) ? &filetype : 'no')
-  if g:ll_fileinfo !=# ''
-    let l:total_len += strlen(g:ll_fileinfo) + 2
-    if l:ww < l:total_len
-      let g:ll_fileinfo = ''
-      return ''
-    endif
-  endif
-
-  let g:ll_ale = LLGetAle()
-  if g:ll_ale !=# ''
-    let l:total_len += strlen(g:ll_ale) + 2
-    if l:ww < l:total_len
-      let g:ll_ale = ''
-      return ''
-    endif
-  endif
-
-  let g:ll_fugitive = exists('*fugitive#head') ? fugitive#head() : ''
-  if g:ll_fugitive !=# ''
-    let l:total_len += strlen(g:ll_fugitive) + 2
-    if l:ww < l:total_len
-      let g:ll_fugitive = ''
-      return ''
-    endif
-  endif
-
-  return ''
-endfunction
-
-function! LLMode()
-  return g:ll_mode
-endfunction
-
-function! LLFileName()
-  return g:ll_filename
-endfunction
-
-
-function! LLFileInfo()
-  return g:ll_fileinfo
-endfunction
-
-function! LLLineInfo()
-  return g:ll_lineinfo
-endfunction
-
-function! LLAle()
-  return g:ll_ale
-endfunction
-
-
-if dein#tap('ale')
-  function! LLGetAle()
-    let l:count = ale#statusline#Count(bufnr(''))
-    let l:errors = l:count.error + l:count.style_error
-    let l:warnings = l:count.warning + l:count.style_warning
-    return l:count.total == 0 ? 'OK' : 'E:' . l:errors . ' W:' . l:warnings
-  endfunction
-else
-  function! LLGetAle()
-    return ''
-  endfunction
-endif
-" }}}
-'''
-[[plugins]]
-repo = 'taohexxx/lightline-buffer'
-depends = 'itchyny/lightline.vim'
-hook_add = '''
-" lightline-buffer ui settings
-
-" lightline-buffer function settings
-let g:lightline_buffer_show_bufnr = 0
-
-" :help filename-modifiers
-" let g:lightline_buffer_fname_mod = ':t'
-
-" hide buffer list
-let g:lightline_buffer_excludes = ['denite']
-
-" max file name length
-let g:lightline_buffer_maxflen = 30
-
-" max file extension length
-let g:lightline_buffer_maxfextlen = 3
-
-" min file name length
-let g:lightline_buffer_minflen = 16
-
-" min file extension length
-let g:lightline_buffer_minfextlen = 3
-
-" reserve length for other component (e.g. info, close)
-let g:lightline_buffer_reservelen = 20
-if dein#tap('vim-devicons')
-    let g:lightline_buffer_logo = ' '
-    let g:lightline_buffer_readonly_icon = ''
-    let g:lightline_buffer_modified_icon = '＋'
-    let g:lightline_buffer_git_icon = ' '
-    let g:lightline_buffer_ellipsis_icon = '..'
-    let g:lightline_buffer_expand_left_icon = '◀ '
-    let g:lightline_buffer_expand_right_icon = ' ▶'
-    let g:lightline_buffer_active_buffer_left_icon = ''
-    let g:lightline_buffer_active_buffer_right_icon = ''
-    let g:lightline_buffer_separator_icon = '  '
-endif
 '''
 # }}}

@@ -21,3 +21,4 @@ if has('nvim')
 endif
 let g:vimtex_fold_manual = 1
 '''
+
