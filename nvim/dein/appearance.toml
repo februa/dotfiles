@@ -1,0 +1,241 @@
+[[plugins]]
+repo = 'ryanoasis/vim-devicons'
+hook_add = '''
+" vim-devicons
+let g:webdevicons_conceal_nerdtree_brackets = 1
+let g:WebDevIconsNerdTreeAfterGlyphPadding = ' '
+
+" dir-icons
+let g:WebDevIconsUnicodeDecorateFolderNodes = 1
+let g:DevIconsEnableFoldersOpenClose = 1
+let g:WebDevIconsUnicodeDecorateFolderNodesDefaultSymbol = ''
+let g:DevIconsDefaultFolderOpenSymbol = ''
+" file-icons
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols = {}
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['html'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
+let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
+'''
+[[plugins]]
+repo = 'LeafCage/foldCC'
+hook_add = '''set foldtext=FoldCCtext()'''
+# lightline.vim {{{
+[[plugins]]
+repo = 'itchyny/lightline.vim'
+hook_add = '''
+
+let g:lightline = {
+      \'active': {
+      \'left':  [ ['prepare', 'mode', 'filename'],
+      \           ['fugitive']
+      \         ],
+      \'right': [ ['lineinfo'],
+      \           ['fileinfo'],
+      \           ['ale']
+      \         ]
+      \ },
+      \ 'tabline': {
+      \ 'left':  [ [ 'bufferbefore', 'buffercurrent', 'bufferafter' ], ],
+      \ },
+      \ 'component_visible_condition': {
+      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'},
+      \ 'component_expand': {
+      \   'buffercurrent': 'lightline#buffer#buffercurrent',
+      \   'bufferbefore': 'lightline#buffer#bufferbefore',
+      \   'bufferafter': 'lightline#buffer#bufferafter',
+      \ },
+      \ 'component_type': {
+      \   'buffercurrent': 'tabsel',
+      \   'bufferbefore': 'raw',
+      \   'bufferafter': 'raw',
+      \ },
+      \ 'component_function': {
+      \    'prepare': 'LLPrepare',
+      \    'mode': 'LLMode',
+      \    'filename': 'LLFileName',
+      \    'fugitive': 'LLFugitive',
+      \    'fileinfo': 'LLFileInfo',
+      \    'ale': 'LLAle',
+      \    'bufferinfo': 'lightline#buffer#bufferinfo',
+      \    'readonly': 'LightlineReadonly',
+      \ },
+      \}
+let g:lightline.colorscheme = 'nord'
+let g:lightline.inactive = g:lightline.active
+if dein#tap('vim-devicons')
+    let g:lightline.separator = { 'left': '', 'right': '' }
+    let g:lightline.subseparator = { 'left': '', 'right': '' }
+    let g:lightline.component = {
+            \ 'separator': '',
+            \ 'lineinfo': ' %3l:%-2v',
+            \ }
+endif
+let g:lightline.tab = {
+      \ 'active': [ 'tabnum', 'filename', 'modified' ],
+      \ 'inactive': [ 'tabnum', 'filename', 'modified' ]
+      \ }
+
+let g:lightline.tab_component_function = {
+      \ 'filename': 'LLTabFilename',
+      \ 'modified': 'lightline#tab#modified',
+      \ 'readonly': 'lightline#tab#readonly',
+      \ 'tabnum': 'lightline#tab#tabnum' }
+" lightline functions {{{
+function! LLFugitive()
+  return g:ll_fugitive
+endfunction
+function! LightlineReadonly()
+    return &readonly ? '' : ''
+endfunction
+function! LLTabFilename(n) abort
+  let buflist = tabpagebuflist(a:n)
+  let winnr = tabpagewinnr(a:n)
+  let _ = pathshorten(expand('#'.buflist[winnr - 1].':f'))
+  return _ !=# '' ? _ : '[No Name]'
+endfunction
+
+function! LLPrepare()
+  let g:ll_mode = ''
+  let g:ll_filename = ''
+  let g:ll_lineinfo = ''
+  let g:ll_ale = ''
+
+  let l:ww = winwidth('.')
+  let l:total_len = 0
+
+  let g:ll_mode = lightline#mode() . (&paste ? ' P' : '')
+  if g:ll_mode !=# ''
+    let l:total_len += strlen(g:ll_mode) + 2
+    if l:ww < l:total_len
+      return ''
+    endif
+  endif
+
+  let g:ll_lineinfo = printf('%d/%d:%d', line('.'), line('$'), col('.'))
+  if g:ll_lineinfo !=# ''
+    let l:total_len += strlen(g:ll_lineinfo) + 2
+    if l:ww < l:total_len
+      let g:ll_lineinfo = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_filename = expand('%:t') . (&filetype !~? 'help' && &readonly ? ' ' : '') . (&modifiable && &modified ? ' +' : '')
+  if g:ll_filename !=# ''
+    let l:total_len += strlen(g:ll_filename) + 2
+    if l:ww < l:total_len
+      let g:ll_filename = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_fileinfo = &fileformat . ' ' . (strlen(&fileencoding) ? &fileencoding : &encoding) . ' ' . (strlen(&filetype) ? &filetype : 'no')
+  if g:ll_fileinfo !=# ''
+    let l:total_len += strlen(g:ll_fileinfo) + 2
+    if l:ww < l:total_len
+      let g:ll_fileinfo = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_ale = LLGetAle()
+  if g:ll_ale !=# ''
+    let l:total_len += strlen(g:ll_ale) + 2
+    if l:ww < l:total_len
+      let g:ll_ale = ''
+      return ''
+    endif
+  endif
+
+  let g:ll_fugitive = exists('*fugitive#head') ? fugitive#head() : ''
+  if g:ll_fugitive !=# ''
+    let l:total_len += strlen(g:ll_fugitive) + 2
+    if l:ww < l:total_len
+      let g:ll_fugitive = ''
+      return ''
+    endif
+  endif
+
+  return ''
+endfunction
+
+function! LLMode()
+  return g:ll_mode
+endfunction
+
+function! LLFileName()
+  return g:ll_filename
+endfunction
+
+
+function! LLFileInfo()
+  return g:ll_fileinfo
+endfunction
+
+function! LLLineInfo()
+  return g:ll_lineinfo
+endfunction
+
+function! LLAle()
+  return g:ll_ale
+endfunction
+
+
+if dein#tap('ale')
+  function! LLGetAle()
+    let l:count = ale#statusline#Count(bufnr(''))
+    let l:errors = l:count.error + l:count.style_error
+    let l:warnings = l:count.warning + l:count.style_warning
+    return l:count.total == 0 ? 'OK' : 'E:' . l:errors . ' W:' . l:warnings
+  endfunction
+else
+  function! LLGetAle()
+    return ''
+  endfunction
+endif
+" }}}
+'''
+[[plugins]]
+repo = 'taohexxx/lightline-buffer'
+depends = 'itchyny/lightline.vim'
+hook_add = '''
+" lightline-buffer ui settings
+
+" lightline-buffer function settings
+let g:lightline_buffer_show_bufnr = 0
+
+" :help filename-modifiers
+let g:lightline_buffer_fname_mod = ':t'
+
+" hide buffer list
+let g:lightline_buffer_excludes = ['denite']
+
+" max file name length
+let g:lightline_buffer_maxflen = 30
+
+" max file extension length
+let g:lightline_buffer_maxfextlen = 3
+
+" min file name length
+let g:lightline_buffer_minflen = 16
+
+" min file extension length
+let g:lightline_buffer_minfextlen = 3
+
+" reserve length for other component (e.g. info, close)
+let g:lightline_buffer_reservelen = 20
+if dein#tap('vim-devicons')
+    let g:lightline_buffer_logo = ' '
+    let g:lightline_buffer_readonly_icon = ''
+    let g:lightline_buffer_modified_icon = '＋'
+    let g:lightline_buffer_git_icon = ' '
+    let g:lightline_buffer_ellipsis_icon = '..'
+    let g:lightline_buffer_expand_left_icon = '◀ '
+    let g:lightline_buffer_expand_right_icon = ' ▶'
+    let g:lightline_buffer_active_buffer_left_icon = ''
+    let g:lightline_buffer_active_buffer_right_icon = ''
+    let g:lightline_buffer_separator_icon = '  '
+endif
+'''
+# }}}

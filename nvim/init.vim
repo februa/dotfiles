@@ -3,6 +3,10 @@ augroup MyAutoCmd
     autocmd!
 augroup END
 
+if has('python3') && has('win64')
+    let g:python3_host_prog = expand('$HOME\AppData\Local\Programs\Python\Python37\python.exe')
+endif
+
 " ENV
 if     has('unix') || has('mac')
         let $CACHE = empty($XDG_CACHE_HOME) ? expand('$HOME/.cache') : $XDG_CACHE_HOME

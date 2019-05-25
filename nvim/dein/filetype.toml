@@ -5,11 +5,6 @@ repo = 'lilydjwg/fcitx.vim'
 if = '''has('unix')'''
 on_ft = ['tex','text','markdown']
 
-[[plugins]]
-repo = 'ujihisa/neco-look'
-depends = 'deopelete.nvim'
-if = '''has('unix')'''
-on_ft = ['tex','text','markdown']
 
 [[plugins]]
 repo = 'kana/vim-smartchr'
@@ -18,7 +13,6 @@ on_ft = ['tex','text','markdown']
 
 [[plugins]]
 repo = 'tyru/eskk.vim'
-
 
 # }}}
 # Toml {{{

@@ -1,0 +1,42 @@
+[[plugins]]
+repo = 'Shougo/denite.nvim'
+rev = 'master'
+on_event = 'BufRead'
+hook_add = '''
+"現在開いているファイルのディレクトリ下のファイル一覧。
+nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR>
+" buffer list
+nnoremap <silent> s; :<C-u>Denite buffer<CR>
+" recent file list
+nnoremap <silent> sm :<C-u>Denite file/old<CR>
+
+" if dein#tap('denite.nvim')
+" endif
+
+'''
+hook_post_source = '''
+if dein#tap('denite.nvim')
+    " Change denite default options
+    call denite#custom#option('default', {
+      \ 'split': 'floating',
+      \ 'prompt': '>',
+      \ 'auto-accel': 'true',
+      \ 'auto-resize': 'true',
+      \ })
+    call denite#custom#source('file' , 'matchers', ['matcher/cpsm', 'matchers/fuzzy'])
+    call denite#custom#source('file/rec'    , 'matchers', ['matcher/cpsm', 'matcher/fuzzy'])
+    call denite#custom#source('file/old'    , 'matchers', [
+                \ 'matcher/cpsm',
+                \ 'matcher/fuzzy',
+                \ 'matcher/regexp',
+                \ ])
+    call denite#custom#source('buffer'  , 'matchers', ['matcher/regexp'])
+    call denite#custom#map('insert', '<C-N>', '<denite:move_to_next_line>', 'noremap')
+    call denite#custom#map('insert', '<C-P>', '<denite:move_to_previous_line>', 'noremap')
+endif
+'''
+[[plugins]]
+repo = 'nixprime/cpsm'
+build = 'env PY3=ON ./install.sh'
+[[plugins]]
+repo = 'Shougo/neomru.vim'
