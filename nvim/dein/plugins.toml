@@ -11,6 +11,7 @@ endif
 '''
 hook_post_update = '''
   if has('win32')
+    let cmd = 'mingw32-make -f make_mingw64.mak'
   elseif has('win32unix') " for Cygwin
     let cmd = 'make -f make_cygwin.mak'
   elseif executable('gmake')
