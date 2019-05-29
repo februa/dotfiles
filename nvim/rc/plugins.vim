@@ -10,7 +10,12 @@ if &runtimepath !~# '/dein.vim'
 
     execute 'set runtimepath^=' . s:dein_repo_dir
 endif
-
+if has('python3') && has('win64')
+    let g:python3_host_prog = expand('$HOME\AppData\Local\Programs\Python\Python37\python.exe')
+elseif has('python3') && has('unix')
+    let g:python3_host_prog = expand('/home/leberac/.pyenv/shims/python3')
+    let g:python_host_prog = expand('/home/leberac/.pyenv/shims/python')
+endif
 let g:dein#install_max_processes = 16
 let g:dein#install_message_type = 'none'
 
