@@ -11,7 +11,7 @@ endif
 '''
 hook_post_update = '''
   if has('win32')
-    let cmd = 'mingw32-make -f make_mingw64.mak'
+    let cmd = 'mingw32-make -f make_mingw32.mak'
   elseif has('win32unix') " for Cygwin
     let cmd = 'make -f make_cygwin.mak'
   elseif executable('gmake')
@@ -142,9 +142,9 @@ let g:undotree_WindowLayout = 2         " undotreeは左側/diffは下にウィ�
 let g:undotree_ShortIndicators = 1      " 時間単位は短く表示
 let g:undotree_SplitWidth = 30          " undotreeのウィンドウ幅
 let g:undotree_SetFocusWhenToggle = 1   " undotreeを開いたらフォーカスする
-"let g:undotree_DiffAutoOpen = 0         " diffウィンドウは起動時無効
+" let g:undotree_DiffAutoOpen = 1         " diffウィンドウは起動時無効
 let g:undotree_DiffpanelHeight = 8      " diffウィンドウの行数
-"let g:undotree_HighlightChangedText = 0 " 変更箇所のハイライト無効
+let g:undotree_HighlightChangedText = 1 " 変更箇所のハイライト
 " undotreeをトグル表示
 noremap <C-u> :UndotreeToggle<CR>
 

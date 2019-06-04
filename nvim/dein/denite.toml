@@ -1,10 +1,10 @@
 [[plugins]]
 repo = 'Shougo/denite.nvim'
-rev = 'master'
 on_event = 'BufRead'
 hook_add = '''
 "現在開いているファイルのディレクトリ下のファイル一覧。
-nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR>
+" au BufEnter * if &buftype!="terminal" | nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR> | endif
+" au BufEnter * if &buftype=="terminal" | nnoremap <silent> sN None | endif
 " buffer list
 nnoremap <silent> s; :<C-u>Denite buffer<CR>
 " buffer & recent file list
@@ -93,8 +93,8 @@ if dein#tap('denite.nvim')
 
 endif
 '''
-[[plugins]]
-repo = 'nixprime/cpsm'
-build = 'env PY3=ON ./install.sh'
+# [[plugins]]
+# repo = 'nixprime/cpsm'
+# build = 'env PY3=ON ./install.sh'
 [[plugins]]
 repo = 'Shougo/neomru.vim'

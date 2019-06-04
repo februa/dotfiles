@@ -65,9 +65,8 @@ repo = 'Shougo/neosnippet-snippets'
 
 [[plugins]]
 repo = 'ncm2/float-preview.nvim'
-depends = 'deopelete.nvim'
 hook_add = '''
-let g:float_preview#docked = 1
+let g:float_preview#docked = 0
 '''
 
 [[plugins]]

@@ -23,15 +23,9 @@ function! Term()
   call termopen(&shell, {'on_exit': 'OnExit'})
 endfunction
 
-function! CloseLastTerm()
-  if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1
-    :q
-  endif
-endfunction
-
 function! OnExit(job_id, code, event)
   if a:code == 0
-    call CloseLastTerm()
+    call CloseBuf()
   endif
 endfunction
 
@@ -39,10 +33,10 @@ function! CloseBuf()
   if len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 1 || winnr('$') > 1
     :q
   elseif &buftype == 'terminal'
-    :bn
+    :bd!
   else
     :bd
   endif
 endfunction
 nnoremap :q<CR> :up<CR>:call CloseBuf()<CR>
-cnoremap  q<CR>  up<CR>:call CloseBuf()<CR>
+cnoremap  q<CR> :up<CR>:call CloseBuf()<CR>
