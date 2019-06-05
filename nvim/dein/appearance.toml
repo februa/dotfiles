@@ -17,6 +17,7 @@ let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['css'] = ''
 let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['md'] = ''
 let g:WebDevIconsUnicodeDecorateFileNodesExtensionSymbols['txt'] = ''
 '''
+
 [[plugins]]
 repo = 'LeafCage/foldCC'
 hook_add = '''set foldtext=FoldCCtext()'''
@@ -24,7 +25,12 @@ hook_add = '''set foldtext=FoldCCtext()'''
 repo = 'majutsushi/tagbar'
 [[plugins]]
 repo = 'delphinus/lightline-delphinus'
-
+hook_add = '''
+let g:lightline_delphinus_use_nerd_fonts_glyphs = 1
+let g:lightline_delphinus_colorscheme = "nord_improved"
+let g:lightline_delphinus_tagbar_enable = 1
+let g:lightline_delphinus_gitgutter_enable = 1
+'''
 
 [[plugins]]
 repo = 'itchyny/lightline.vim'
@@ -199,47 +205,3 @@ endif
 " }}}
 " }}}
 '''
-# lightline-buffer {{{
-# [[plugins]]
-# repo = 'taohexxx/lightline-buffer'
-# depends = 'itchyny/lightline.vim'
-# hook_add = '''
-# " lightline-buffer ui settings
-#
-# " lightline-buffer function settings
-# let g:lightline_buffer_show_bufnr = 0
-#
-# " :help filename-modifiers
-# let g:lightline_buffer_fname_mod = ':t'
-#
-# " hide buffer list
-# let g:lightline_buffer_excludes = ['denite']
-#
-# " max file name length
-# let g:lightline_buffer_maxflen = 30
-#
-# " max file extension length
-# let g:lightline_buffer_maxfextlen = 3
-#
-# " min file name length
-# let g:lightline_buffer_minflen = 16
-#
-# " min file extension length
-# let g:lightline_buffer_minfextlen = 3
-#
-# " reserve length for other component (e.g. info, close)
-# let g:lightline_buffer_reservelen = 20
-# if dein#tap('vim-devicons')
-#     let g:lightline_buffer_logo = ' '
-#     let g:lightline_buffer_readonly_icon = ''
-#     let g:lightline_buffer_modified_icon = '＋'
-#     let g:lightline_buffer_git_icon = ' '
-#     let g:lightline_buffer_ellipsis_icon = '..'
-#     let g:lightline_buffer_expand_left_icon = '◀ '
-#     let g:lightline_buffer_expand_right_icon = ' ▶'
-#     let g:lightline_buffer_active_buffer_left_icon = ''
-#     let g:lightline_buffer_active_buffer_right_icon = ''
-#     let g:lightline_buffer_separator_icon = '  '
-# endif
-# '''
-# }}}

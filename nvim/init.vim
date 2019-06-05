@@ -31,16 +31,3 @@ call s:load('plugins')
 call s:load('terminal')
 call s:load('editor')
 call s:load('encodings')
-" if     has('nvim')
-"         let $CACHE  = stdpath('cache')
-"         let $CONFIG = stdpath('config')
-"         let $DATA   = stdpath('data')
-" elseif has('unix') || has('mac')
-"         let $CACHE  = empty($XDG_CACHE_HOME) ? expand('$HOME/.cache/nvim') : $XDG_CACHE_HOME
-"         let $CONFIG = empty($XDG_CONFIG_HOME) ? expand('$HOME/.config/nvim') : $XDG_CONFIG_HOME
-"         let $DATA   = empty($XDG_DATA_HOME) ? expand('$HOME/.local/share/nvim') : $XDG_DATA_HOME
-" elseif has('win32')
-"         let $CACHE  = expand('$HOME/AppData/Local/Temp/nvim')
-"         let $CONFIG = expand('$HOME/AppData/Local/nvim')
-"         let $DATA   = expand('$HOME/AppData/Local/nvim-data')
-" endif

@@ -116,7 +116,7 @@ let g:NERDTreeMouseMode=2
 let g:NERDTreeDirArrows=0
 let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeBookmarksFile=''
-nnoremap <C-n> :NERDTreeToggle<CR>
+" nnoremap <C-n> :NERDTreeToggle<CR>
 " Auto-close nerdtree window
 " autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (&filetype == 'nerdtree') && len(filter(range(1, bufnr('$')), 'buflisted(v:val)')) == 0 | quit | endif
 '''
