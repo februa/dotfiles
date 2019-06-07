@@ -9,9 +9,9 @@ endif
 
 " ENV
 if     has('unix') || has('mac')
-        let $CACHE = empty($XDG_CACHE_HOME) ? expand('$HOME/.cache') : $XDG_CACHE_HOME
-        let $CONFIG = empty($XDG_CONFIG_HOME) ? expand('$HOME/.config') : $XDG_CONFIG_HOME
-        let $DATA = empty($XDG_DATA_HOME) ? expand('$HOME/.local/share') : $XDG_DATA_HOME
+        let $CACHE = expand('$HOME/.cache')
+        let $CONFIG = expand('$HOME/.config')
+        let $DATA = expand('$HOME/.local/share')
 elseif has('win32')
         let $CACHE = expand('$HOME/AppData/Local/nvim-data/cache')
         let $CONFIG = expand('$HOME/AppData/Local')

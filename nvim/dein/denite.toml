@@ -1,91 +1,167 @@
 [[plugins]]
-repo = 'spolu/dwm.vim'
-hook_add = '''
-let g:dwm_master_pane_width="66%"
-'''
-[[plugins]]
-repo = 'Shougo/denite.nvim'
+repo     = 'Shougo/denite.nvim'
 on_cmd   = ['Denite', 'DeniteBufferDir', 'DeniteCursorWord']
 on_func  = ['denite#']
-depends  = ['dwm.vim']
+depends  = ['dwm.vim', 'fruzzy']
 hook_add = ''' "{{{
-"現在開いているファイルのディレクトリ下のファイル一覧。
-nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR>
-" buffer list
-nnoremap <silent> s; :<C-u>Denite buffer<CR>
-" buffer & recent file list
-nnoremap <silent> sm :<C-u>Denite buffer file/old<CR>
-nnoremap <silent> s/ :<C-u>Denite line<CR>
+  nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR>
+  nnoremap <silent> s; :<C-u>Denite buffer<CR>
+  nnoremap <silent> sm :<C-u>Denite buffer file/old<CR>
+  nnoremap <silent> s/ :<C-u>Denite line<CR>
+  if has('nvim')
+    autocmd BufEnter \[denite\] call s:denite_change_cursorline()
+    function! s:denite_change_cursorline() abort
+      let output = execute('hi Cursorline')
+      let guibg = matchstr(output, '\(guibg=\)\@<=#[a-zA-Z0-9]\+')
+      hi CursorLine guibg=#183203
+      execute 'autocmd BufLeave <buffer> hi Cursorline guibg=' . guibg
+    endfunction
+  endif
 
+  function! s:my_denite_outline(filetype) abort
+    execute 'Denite' a:filetype ==# 'go' ? "decls:'%:p'" : 'outline'
+  endfunction
+
+  function! s:my_denite_decls(filetype) abort
+    if a:filetype ==# 'go'
+      Denite decls
+    else
+      call denite#util#print_error('decls does not support filetypes except go')
+    endif
+  endfunction
+
+  function! s:my_denite_file_rec_goroot() abort
+    if !executable('go')
+      call denite#util#print_error('`go` executable not found')
+      return
+    endif
+    let out = system('go env | grep ''^GOROOT='' | cut -d\" -f2')
+    let goroot = substitute(out, '\n', '', '')
+    call denite#start(
+          \ [{'name': 'my_file_rec', 'args': [goroot]}],
+          \ {'input': '.go'})
+  endfunction
+
+  function! s:my_denite_with_pwd(action) abort
+    let pwd = get(b:, '__pwd__', '')
+    if a:action ==# 'grep'
+      call denite#start([{'name': 'grep', 'args': [pwd, '', '!']}])
+    elseif a:action ==# 'my_file_rec'
+      call denite#start([{'name': 'my_file_rec', 'args': [pwd]}])
+    else
+      call denite#start([{'name': a:action, 'args': ['', pwd]}])
+    endif
+  endfunction
 "}}} '''
+
 hook_post_source = ''' "{{{
-if dein#tap('denite.nvim')
-    " Change denite default options
-    call denite#custom#option('default', {
-      \ 'split': 'floating',
-      \ 'prompt': '>>>',
-      \ 'auto-accel': 'true',
-      \ 'auto-resize': 'true',
-      \ 'filter-updatetime': 100,
-      \ })
-	" Change file/rec command.
-    if has('unix')
-        call denite#custom#var('file/rec', 'command',
-        \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
+  function! s:dwm_new(context) abort
+    call DWM_New()
+    call denite#do_action(a:context, 'open', a:context['targets'])
+  endfunction
+
+  " from doc
+  function! s:candidate_file_rec(context) abort
+    let path = a:context['targets'][0]['action__path']
+    let dir = denite#util#path2directory(path)
+    let sources_queue = a:context['sources_queue'] + [[
+          \ {'name': 'my_file_rec', 'args': [dir]},
+          \ ]]
+    return {'sources_queue': sources_queue}
+  endfunction
+
+  function! s:candidate_grep(context) abort
+    let path = a:context['targets'][0]['action__path']
+    let dir = denite#util#path2directory(path)
+    let sources_queue = a:context['sources_queue'] + [[
+          \ {'name': 'grep', 'args': [path, '', '!']},
+          \ ]]
+    return {'is_interactive': v:false, 'sources_queue': sources_queue}
+  endfunction
+
+  function! s:narrow_grep(context, ...) abort
+    let sources = get(a:context, 'sources', [])
+    let filtered = filter(copy(sources),
+          \ {i, v -> get(v, 'name', '') ==# 'grep'})
+    if len(filtered) == 0
+      call denite#util#print_error('current sources does not include `grep`.')
+      return
     endif
+    let args = get(filtered[0], 'args', [])
+    " TODO: add feature to know is_interactive in context
+    "let pattern = get(args, 2, '')
+    "if pattern !=# '!'
+      "call denite#util#print_error('current grep source is not interactive')
+      "return
+    "endif
+    let path = get(args, 0, '')
+    let opt = get(args, 1, '')
+    let input = get(a:context, 'input', '')
+    let pattern = substitute(input, '\s\+', '.*', 'g')
+    let sources_queue = a:context['sources_queue'] + [[
+          \ {'name': 'grep', 'args': [path, opt, pattern]},
+          \ ]]
+    return {'sources_queue': sources_queue}
+  endfunction
 
-	" Change matchers.
-	call denite#custom#source(
-	\ 'file_mru', 'matchers', ['matcher/fuzzy', 'matcher/project_files'])
-	call denite#custom#source(
-	\ 'file/rec', 'matchers', ['matcher/cpsm'])
+  " Use pt for grepping files
+  call denite#custom#var('grep', 'command', ['pt'])
+  call denite#custom#var('grep', 'default_opts',
+        \ ['--nogroup', '--nocolor', '--smart-case', '--ignore=.git', '--ignore=dist', '--ignore=node_modules'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', [])
+  call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('grep', 'final_opts', [])
 
-	" Change sorters.
-	call denite#custom#source(
-	\ 'file/rec', 'sorters', ['sorter/sublime'])
+  " Use fd for finding files
+  call denite#custom#var('my_file_rec', 'command',
+        \ ['fd', '--follow', '--hidden', '--exclude', '.git', '.*'])
 
-	" Add custom menus
-	let s:menus = {}
+  call denite#custom#action('buffer,directory,file,memo,openable', 'dwm_new', function('s:dwm_new'))
+  call denite#custom#action('buffer,directory,file,openable', 'my_file_rec', function('s:candidate_file_rec'))
+  call denite#custom#action('buffer,directory,file,openable', 'grep', function('s:candidate_grep'))
+  call denite#custom#action('file', 'grep', function('s:narrow_grep'))
 
-	let s:menus.my_commands = {
-		\ 'description': 'Example commands'
-		\ }
-	let s:menus.my_commands.command_candidates = [
-		\ ['Split the window', 'vnew'],
-		\ ['Format code', 'FormatCode', 'go,python'],
-		\ ]
+  call denite#custom#source('grep', 'args', ['', '', '!'])
+  call denite#custom#source('grep', 'converters', ['converter/abbr_word'])
 
-	call denite#custom#var('menu', 'menus', s:menus)
-    if has('unix')
-        " Ag command on grep source
-        call denite#custom#var('grep', 'command', ['ag'])
-        call denite#custom#var('grep', 'default_opts',
-                \ ['-i', '--vimgrep'])
-        call denite#custom#var('grep', 'recursive_opts', [])
-        call denite#custom#var('grep', 'pattern_opt', [])
-        call denite#custom#var('grep', 'separator', ['--'])
-        call denite#custom#var('grep', 'final_opts', [])
-    endif
+  " ref. https://github.com/arcticicestudio/nord-vim/issues/79
+  call denite#custom#option('_', {
+        \ 'cached_filter': v:true,
+        \ 'cursor_shape': v:true,
+        \ 'cursor_wrap': v:true,
+        \ 'highlight_filter_background': 'DeniteFilter',
+        \ 'highlight_matched_char': 'Underlined',
+        \ 'matchers': 'matcher/fruzzy',
+        \ 'prompt': '$ ',
+        \ 'split': 'floating',
+        \ 'start_filter': v:true,
+        \ 'statusline': v:false,
+        \ })
 
-	" Specify multiple paths in grep source
-	"call denite#start([{'name': 'grep',
-	"      \ 'args': [['a.vim', 'b.vim'], '', 'pattern']}])
+  function! s:denite_detect_size() abort
+    let s:denite_winheight = 20
+    let s:denite_winrow = &lines > s:denite_winheight ? (&lines - s:denite_winheight) / 2 : 0
+    let s:denite_winwidth = &columns > 240 ? &columns / 2 : 120
+    let s:denite_wincol = &columns > s:denite_winwidth ? (&columns - s:denite_winwidth) / 2 : 0
+    call denite#custom#option('_', {
+          \ 'wincol': s:denite_wincol,
+          \ 'winheight': s:denite_winheight,
+          \ 'winrow': s:denite_winrow,
+          \ 'winwidth': s:denite_winwidth,
+          \ })
+  endfunction
 
-	" Define alias
-	call denite#custom#alias('source', 'file/rec/git', 'file/rec')
-	call denite#custom#var('file/rec/git', 'command',
-	      \ ['git', 'ls-files', '-co', '--exclude-standard'])
+  augroup denite-detect-size
+    autocmd!
+    autocmd VimResized * call <SID>denite_detect_size()
+  augroup END
 
-	call denite#custom#alias('source', 'file/rec/py', 'file/rec')
-	call denite#custom#var('file/rec/py', 'command',['scantree.py'])
+  call s:denite_detect_size()
 
-	" Change ignore_globs
-	call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
-	      \ [ '.git/', '.ropeproject/', '__pycache__/',
-	      \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
+  call denite#custom#option('denite-z', 'default_action', 'narrow')
+"}}} '''
 
-endif
-" }}} '''
 [plugins.ftplugin]
 denite = ''' "{{{
   let b:dwm_disabled = 1
@@ -97,6 +173,7 @@ denite = ''' "{{{
   nnoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
   nnoremap <silent><buffer><expr> <C-g>   denite#do_map('do_action', 'grep')
   nnoremap <silent><buffer><expr> <C-n>   denite#do_map('do_action', 'dwm_new')
+  nnoremap <silent><buffer><expr> d       denite#do_map('do_action', 'delete')
   nnoremap <silent><buffer><expr> <C-x>   denite#do_map('do_action', 'quick_move')
   nnoremap <silent><buffer><expr> <CR>    denite#do_map('do_action')
   nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select).'j'
@@ -112,10 +189,58 @@ denite-filter = ''' "{{{
   inoremap <silent><buffer><expr> <BS>    denite#do_map('move_up_path')
   inoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
   nnoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
+
+  " These mappings are not recommended in doc.
+  inoremap <silent><buffer> <C-j>   <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
+  inoremap <silent><buffer> <C-k>   <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
 "}}} '''
+
 [[plugins]]
-repo = 'Shougo/neomru.vim'
-if = '''has('unix')'''
+repo      = 'Jagua/vim-denite-ghq'
+on_source = ['denite.nvim']
+
 [[plugins]]
-repo = 'nixprime/cpsm'
-build = 'env PY3=ON ./install.sh'
+repo      = 'delphinus/my-denite-sources'
+on_source = ['denite.nvim']
+
+[[plugins]]
+repo      = 'delphinus/vim-denite-scriptnames'
+on_source = ['denite.nvim']
+
+[[plugins]]
+repo      = 'neoclide/denite-git'
+on_source = ['denite.nvim', 'my-denite-sources']
+depends   = ['vim-easygit']
+
+[[plugins]]
+repo      = 'neoclide/npm.nvim'
+on_source = ['denite.nvim']
+hook_source = '''
+  let npm_py = 'rplugin/python3/denite/kind/npm.py'
+  let npm_nvim_npm_py = g:dein#plugin.path . '/' . npm_py
+  let denite = g:dein#_plugins['denite.nvim'].path
+  let denite_npm_py = denite . '/' . npm_py
+  if !filereadable(denite_npm_py)
+    execute '!cp ' . npm_nvim_npm_py . ' ' . denite_npm_py
+  endif
+'''
+hook_post_update = '''
+  !npm install
+'''
+
+[[plugins]]
+repo = 'neoclide/vim-easygit'
+
+[[plugins]]
+repo      = 'raghur/fruzzy'
+on_source = ['denite.nvim']
+hook_add  = ''' "{{{
+  let g:fruzzy#usenative = 0
+  let g:fruzzy#sortonempty = 0
+"}}} '''
+hook_post_update = 'call fruzzy#install()'
+
+[[plugins]]
+repo      = 'rafi/vim-denite-z'
+on_source = ['denite.nvim']
+
