@@ -1,3 +1,7 @@
 .git/
 *~
 rplugin.vim
+
+nvim/undo/
+
+nvim/dein/package-lock\.json
