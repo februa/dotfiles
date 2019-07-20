@@ -24,3 +24,6 @@ function! s:GetBufByte()
     return byte - 1
   endif
 endfunction
+
+set fileformats=unix,dos,mac
+set fileencodings=iso-2022-jp,cp932,sjis,euc-jp,utf-8

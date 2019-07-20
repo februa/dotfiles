@@ -5,7 +5,7 @@ if has('win64')
     set shellxquote=
     source $VIMRUNTIME/mswin.vim
 elseif has('unix')
-    set shell=/bin/bash
+    set shell=/usr/bin/fish
 endif
 
 " Open terminal on new buffer

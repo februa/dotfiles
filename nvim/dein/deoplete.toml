@@ -17,6 +17,9 @@ hook_source = ''' "{{{
     return !col || getline('.')[col - 1] =~# '\s'
   endfunction
 "}}} '''
+hook_add = ''' "{{{
+set completeopt=menuone,preview,noinsert
+"}}} '''
 hook_post_source = ''' "{{{
   call deoplete#custom#source('_', 'converters', [
         \ 'converter_auto_paren',
@@ -31,152 +34,80 @@ hook_post_source = ''' "{{{
         \ },
         \ 'ignore_sources': {
         \   'denite-filter': ['look'],
-        \ }})
+        \ },
+        \ 'yarp': v:true,
+        \ 'smart_case': v:true,
+        \ })
   call deoplete#initialize()
 "}}} '''
-hook_post_update = '!pip3 install -U --user neovim'
 
+# deopelte extra source
+# file/include
 [[plugins]]
 repo      = 'Shougo/neoinclude.vim'
 on_source = ['deoplete.nvim']
-
+hook_add = ''' 
+if !exists('g:neoinclude#exts')
+    let g:neoinclude#exts = {}
+endif
+let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
+'''
+# ()を自動で閉じる
 [[plugins]]
 repo      = 'Shougo/neopairs.vim'
 on_source = ['deoplete.nvim']
-
+# コマンドラインの補完からシグネチャを表示する
 [[plugins]]
 repo      = 'Shougo/echodoc.vim'
 on_source = ['deoplete.nvim']
 hook_source = ''' "{{{
-  let g:echodoc#enable_at_startup = 1
-  let g:echodoc#type = 'virtual'
+	let g:echodoc#enable_at_startup = 1
+    set cmdheight=2
+	let g:echodoc#type = 'float'
 "}}} '''
 
 [[plugins]]
-#repo        = 'autozimu/LanguageClient-neovim'
-#rev         = 'next'
-#repo      = 'rhysd/LanguageClient-neovim'
-#rev       = 'float-window-for-hover'
-# workaround for gopls
-repo = 'delphinus/LanguageClient-neovim'
-rev  = 'gopls-float-window'
+repo = 'tbodt/deoplete-tabnine'
+on_source = ['deoplete.nvim']
+build = './install.sh'
+hook_post_source = '''
+    call deoplete#custom#var('tabnine', {
+    \ 'line_limit': 500,
+    \ 'max_num_results': 20,
+    \ })
+'''
+[[plugins]]
+repo = 'zchee/deoplete-zsh'
+on_source = ['deoplete.nvim']
+[[plugins]]
+repo        = 'autozimu/LanguageClient-neovim'
+rev  = 'next'
+on_if = '''has("unix")'''
 build = 'bash install.sh'
 on_func   = [
   'LanguageClient#textDocument_definition',
   'LanguageClient#textDocument_hover',
   'LanguageClient#textDocument_rename',
   'LanguageClient#textDocument_typeDefinition',
+  'LanguageClient#textDocument_formatting',
 ]
 on_source = ['deoplete.nvim']
 hook_source = ''' "{{{
   " for debugging
   " let g:LanguageClient_loggingFile = '/tmp/LanguageClient.log'
   let g:LanguageClient_serverCommands = {
-        \ 'c': ['ccls'],
-        \ 'cpp': ['ccls'],
+        \ 'c': ['clangd', '-compile-commands-dir=' . getcwd()],
+        \ 'cpp': ['clangd', '-compile-commands-dir=' . getcwd()],
         \ 'python': ['pyls'],
-        \ 'ruby': ['solargraph', 'stdio'],
-        \ 'vue': ['vls'],
-        \ }
-  " see setting for ALE
-  let g:LanguageClient_diagnosticsDisplay = {
-        \ '1': {
-        \   'name': 'Error',
-        \   'texthl': 'ALEError',
-        \   'signText': nr2char(0x25b8),
-        \   'signTexthl': 'ALEErrorSign',
-        \   'virtualTexthl': 'Error',
-        \ },
-        \ '2': {
-        \   'name': 'Warning',
-        \   'texthl': 'ALEWarning',
-        \   'signText': nr2char(0x25b9),
-        \   'signTexthl': 'ALEWarningSign',
-        \   'virtualTexthl': 'Todo',
-        \ },
-        \ '3': {
-        \   'name': 'Information',
-        \   'texthl': 'ALEInfo',
-        \   'signText': nr2char(0x25b4),
-        \   'signTexthl': 'ALEInfoSign',
-        \   'virtualTexthl': 'Todo',
-        \ },
-        \ '4': {
-        \   'name': 'Hint',
-        \   'texthl': 'ALEInfo',
-        \   'signText': nr2char(0x25b4),
-        \   'signTexthl': 'ALEInfoSign',
-        \   'virtualTexthl': 'Todo',
-        \ },
         \ }
 "}}} '''
 hook_post_update = ''' "{{{
-  !bash install.sh
-  !npm install -g vue-language-server
-  !pip3 install -U --user python-language-server
-  !gem install --user-install solargraph
-"}}} '''
-
-[plugins.ftplugin]
-cpp = ''' "{{{
-  nnoremap <buffer><silent> <Leader>r call LanguageClient#textDocument_rename()<CR>
-  nnoremap <buffer><silent> K call LanguageClient#textDocument_hover()<CR>
-  nnoremap <buffer><silent> <Leader>k call LanguageClient#textDocument_definition()<CR>
-"}}} '''
-python = ''' "{{{
-  nnoremap <buffer><silent> <C-]> call LanguageClient#textDocument_definition()<CR>
-  nnoremap <buffer><silent> <C-w><C-]> split \| call LanguageClient#textDocument_definition()<CR>
-  nnoremap <buffer><silent> <F2> call LanguageClient#textDocument_rename()<CR>
-  nnoremap <buffer><silent> K call LanguageClient#textDocument_hover()<CR>
-  nnoremap <buffer><silent> gd call LanguageClient#textDocument_definition()<CR>
-"}}} '''
-ruby = ''' "{{{
-  nnoremap <buffer><silent> <C-]> call LanguageClient#textDocument_definition()<CR>
-  nnoremap <buffer><silent> <C-w><C-]> split \| call LanguageClient#textDocument_definition()<CR>
-  nnoremap <buffer><silent> <F2> call LanguageClient#textDocument_rename()<CR>
-  nnoremap <buffer><silent> K call LanguageClient#textDocument_hover()<CR>
-  nnoremap <buffer><silent> gd call LanguageClient#textDocument_definition()<CR>
-"}}} '''
-vue = ''' "{{{
-  nnoremap <buffer><silent> <C-]> call LanguageClient#textDocument_typeDefinition<CR>
-  nnoremap <buffer><silent> <C-w><C-]> split \| LanguageClient#textDocument_typeDefinition<CR>
-  nnoremap <buffer><silent> <F2> call LanguageClient#textDocument_rename()<CR>
-  nnoremap <buffer><silent> K call LanguageClient#textDocument_hover()<CR>
-  nnoremap <buffer><silent> gd call LanguageClient#textDocument_definition()<CR>
-"}}} '''
-
-[[plugins]]
-repo     = 'mhartington/nvim-typescript'
-on_ft    = ['typescript']
-hook_source = '''
-  let g:nvim_typescript#default_mappings = 0
-  let g:nvim_typescript#diagnostics_enable = 0
-'''
-hook_post_update = '''
-  !sh ./install.sh
-'''
-
-[plugins.ftplugin]
-typescript = ''' "{{{
-  nnoremap <buffer> <silent> K     :TSType<CR>
-  nnoremap <buffer> <silent> <C-]> :TSDef<CR>
+  !python3 -m pip install -U --user python-language-server
 "}}} '''
 
 [[plugins]]
 repo  = 'Shougo/neco-vim'
 on_ft = ['vim']
-
-[[plugins]]
-repo    = 'carlitux/deoplete-ternjs'
-on_ft   = ['javascript']
-hook_post_update = '''
-  !npm install -g tern
-'''
-hook_source = '''
-  let g:deoplete#sources#ternjs#types = 1
-  let g:deoplete#sources#ternjs#depths = 1
-  let g:deoplete#sources#ternjs#docs = 1
-'''
 
 [[plugins]]
 repo      = 'wellle/tmux-complete.vim'
@@ -187,6 +118,24 @@ hook_add  = 'let g:tmuxcomplete#trigger = ""'
 repo      = 'Shougo/neco-syntax'
 on_source = ['deoplete.nvim']
 
-# [[plugins]]
-# repo  = 'ncm2/float-preview.nvim'
-# on_if = '''has("nvim")'''
+[[plugins]]
+repo = 'lervag/vimtex'
+on_source = ['deoplete.nvim']
+on_ft = 'tex'
+on_if = '''has("unix") || has("mac")'''
+hook_post_source = '''
+call deoplete#custom#var('omni', 'input_patterns', {
+    \ 'tex': g:vimtex#re#deoplete
+    \})
+'''
+hook_add = '''
+if has('mac')
+  let g:vimtex_view_general_viewer='skim'
+else
+  let g:vimtex_view_general_viewer='evince'
+endif
+if has('nvim')
+  let g:vimtex_compiler_progname
+        \ = 'nvr'
+endif
+'''

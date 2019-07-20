@@ -5,7 +5,6 @@ set clipboard+=unnamedplus
 set undofile
 set swapfile
 set autowriteall
-set completeopt=preview,menu
 " Auto-close quickfix window
 autocmd MyAutoCmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
 

@@ -6,6 +6,19 @@ augroup END
 if has('python3') && has('win64')
     let g:python3_host_prog = expand('$HOME\AppData\Local\Programs\Python\Python37\python.exe')
 endif
+" ホームディレクトリとカウントディレクトリに.vimrc.localがあれば読み込む
+augroup vimrc-local
+  autocmd!
+  autocmd VimEnter * call s:vimrc_local(expand('~/.vimrc.local'))
+  autocmd BufNewFile,BufReadPost * call s:vimrc_local(expand('<afile>:p:h'))
+augroup END
+
+function! s:vimrc_local(loc)
+  let files = findfile('.vimrc.local', escape(a:loc, ' ') . ';', -1)
+  for i in reverse(filter(files, 'filereadable(v:val)'))
+    source `=i`
+  endfor
+endfunction
 
 " ENV
 if     has('unix') || has('mac')
@@ -25,6 +38,7 @@ function! s:load(file) abort
     endif
 endfunction
 call s:load('fold')
+call s:load('highlight')
 call s:load('keymap')
 call s:load('mouse')
 call s:load('plugins')

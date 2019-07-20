@@ -1,4 +1,131 @@
+# on_cmd {{{
+[[plugins]]
+repo     = 'dhruvasagar/vim-table-mode'
+on_cmd   = ['TableModeToggle']
+hook_add = 'nnoremap `tm :TableModeToggle<CR>'
+hook_source = '''
+  let g:table_mode_corner = '|'
+'''
+
+[[plugins]]
+repo   = 'fuenor/JpFormat.vim'
+on_cmd = ['JpFormatAll', 'JpJoinAll']
+
+[[plugins]]
+repo     = 'lambdalisue/vim-gista'
+on_cmd   = ['Gista']
+on_func  = ['gista#']
+hook_add = '''
+  let g:gista#command#list#enable_default_mappings = 0
+  nnoremap gl :<c-u>Gista list<CR>
+  nnoremap gL :<c-u>Gista list 
+'''
+hook_post_source = ''' "{{{
+  function! s:gista_mappings() abort
+    nmap <buffer> q <Plug>(gista-quit)
+    nmap <buffer> <C-n> <Plug>(gista-next-mode)
+    nmap <buffer> <C-p> <Plug>(gista-prev-mode)
+    nmap <buffer> ? <Plug>(gista-toggle-mapping-visibility)
+    nmap <buffer> <C-l> <Plug>(gista-redraw)
+    "nmap <buffer> <F5>   <Plug>(gista-update)
+    "nmap <buffer> <S-F5> <Plug>(gista-UPDATE)
+    nmap <buffer> uu   <Plug>(gista-update)
+    nmap <buffer> UU <Plug>(gista-UPDATE)
+    map <buffer> <Return> <Plug>(gista-edit)
+    map <buffer> ee <Plug>(gista-edit)
+    map <buffer> EE <Plug>(gista-edit-right)
+    map <buffer> tt <Plug>(gista-edit-tab)
+    map <buffer> pp <Plug>(gista-edit-preview)
+    map <buffer> ej <Plug>(gista-json)
+    map <buffer> EJ <Plug>(gista-json-right)
+    map <buffer> tj <Plug>(gista-json-tab)
+    map <buffer> pj <Plug>(gista-json-preview)
+    map <buffer> bb <Plug>(gista-browse-open)
+    map <buffer> yy <Plug>(gista-browse-yank)
+    map <buffer> rr <Plug>(gista-rename)
+    map <buffer> RR <Plug>(gista-RENAME)
+    map <buffer> df <Plug>(gista-remove)
+    map <buffer> DF <Plug>(gista-REMOVE)
+    map <buffer> dd <Plug>(gista-delete)
+    map <buffer> DD <Plug>(gista-DELETE)
+    map <buffer> ++ <Plug>(gista-star)
+    map <buffer> -- <Plug>(gista-unstar)
+    map <buffer> ff <Plug>(gista-fork)
+    map <buffer> cc <Plug>(gista-commits)
+  endfunction
+
+  let apinames = gista#client#get_available_apinames()
+  if index(apinames, 'GHE') == -1 && exists('g:gista_github_api_path')
+    call gista#client#register('GHT', g:gista_github_api_path)
+  endif
+  autocmd User GistaList call <SID>gista_mappings()
+"}}} '''
+
+[[plugins]]
+repo   = 'powerman/vim-plugin-AnsiEsc'
+on_cmd = ['AnsiEsc']
+
+[[plugins]]
+repo   = 'rhysd/ghpr-blame.vim'
+on_cmd = ['GHPRBlame']
+hook_source = '''
+  source ~/.init-ghprblame.vim
+  let g:ghpr_show_pr_mapping = 'ð'
+  let g:ghpr_show_pr_in_message = 1
+'''
+
+[[plugins]]
+repo   = 'rhysd/git-messenger.vim'
+on_cmd = 'GitMessenger'
+on_map = '<Plug>(git-messenger'
+hook_add = ''' "{{{
+  let g:git_messenger_no_default_mappings = v:true
+  autocmd FileType gitmessengerpopup call s:git_messenger_my_settings()
+  function! s:git_messenger_my_settings() abort
+    nmap <buffer> <A-b> o
+    nmap <buffer> <C-c> q
+    nmap <buffer> <C-i> O
+    nmap <buffer> <C-o> o
+    nmap <buffer> <CR>  q
+    nmap <buffer> <Esc> q
+    nmap <buffer> â     o
+    nmap <buffer> ∫     o
+  endfunction
+  nnoremap <A-b> :GitMessenger<CR>
+  nnoremap ∫     :GitMessenger<CR>
+  nnoremap â     :GitMessenger<CR>
+"}}} '''
+
+[[plugins]]
+repo      = 'thinca/vim-prettyprint'
+on_cmd    = ['PP', 'PrettyPrint']
+on_source = ['capture.vim']
+
+[[plugins]]
+repo   = 'tyru/capture.vim'
+on_cmd = ['Capture']
+
+[[plugins]]
+repo     = 'tyru/open-browser.vim'
+on_cmd   = ['OpenBrowser', 'OpenBrowserSearch']
+on_func  = ['openbrowser#open']
+on_map   = ['<Plug>(openbrowser-']
+hook_add = '''
+  nmap g<CR> <Plug>(openbrowser-smart-search)
+  vmap g<CR> <Plug>(openbrowser-smart-search)
+'''
+
+[[plugins]]
+repo   = 'vifm/vifm.vim'
+on_cmd = ['EditVifm', 'VsplitVifm', 'SplitVifm', 'DiffVifm', 'TabVifm']
+on_ft  = ['vifm']
+
+# vim:se fdm=marker:
+# }}}
 # on_event {{{
+[[plugins]]
+repo     = 'delphinus/vim-unimpaired'
+on_event = ['FocusLost', 'CursorHold']
 [[plugins]]
 repo     = 'itchyny/vim-cursorword'
 on_event = ['FocusLost', 'CursorHold']
@@ -33,15 +160,15 @@ on_event = ['TextYankPost']
 repo     = 'thinca/vim-visualstar'
 on_event = ['FocusLost', 'CursorHold']
 # }}}
-
 # on_map {{{
-[[plugins]]
+[[plugins]] # 
 #repo     = 'LeafCage/yankround.vim'
 repo      = 'delphinus/yankround.vim'
 rev       = 'feature/denite'
 on_source = ['denite.nvim']
 on_map    = ['<Plug>(yankround-']
-hook_add  = ''' "{{{
+hook_add  = '''
+"{{{
   nmap p <Plug>(yankround-p)
   xmap p <Plug>(yankround-p)
   nmap P <Plug>(yankround-P)
@@ -49,15 +176,14 @@ hook_add  = ''' "{{{
   xmap gp <Plug>(yankround-gp)
   nmap gP <Plug>(yankround-gP)
   nmap <c-p> <Plug>(yankround-prev)
-  nmap <expr><c-n> yankround#is_active() ? "\<Plug>(yankround-next)" : "\<Plug>DWMNew"
 "}}} '''
 
-[[plugins]]
+[[plugins]] # foldをEnterキーで開閉
 repo     = 'arecarn/vim-fold-cycle'
 on_map   = ['<Plug>(fold-cycle-']
 hook_add = ''' "{{{
   nmap <CR> <Plug>(fold-cycle-open)
-  nmap <C-h> <Plug>(fold-cycle-close)
+"   nmap <C-h> <Plug>(fold-cycle-close)
 "}}} '''
 
 [[plugins]]
@@ -65,48 +191,6 @@ repo     = 'chikatoike/concealedyank.vim'
 on_map   = ['<Plug>(operator-concealedyank)']
 hook_add = 'xmap Y <Plug>(operator-concealedyank)'
 
-[[plugins]]
-repo      = 'delphinus/dwm.vim'
-rev       = 'feature/disable'
-on_map    = ['<Plug>DWM']
-hook_add  = ''' "{{{
-  function! s:dwm_reset_pane_width() abort
-    if !exists('*DWM_ResizeMasterPaneWidth')
-      return
-    endif
-    let half = &columns / 2
-    let min_width = get(g:, 'dwm_min_master_pane_width', 9999)
-    let g:dwm_master_pane_width = min([min_width, half])
-    call DWM_ResizeMasterPaneWidth()
-  endfunction
-
-  function! s:dwm_disable() abort
-    autocmd! dwm BufWinEnter
-    augroup! dwm
-  endfunction
-
-  function! s:dwm_enable() abort
-    augroup dwm
-      autocmd!
-      autocmd! BufWinEnter * if &buflisted || &filetype ==# 'help' | call DWM_AutoEnter() | endif
-    augroup END
-  endfunction
-
-  nnoremap <C-J> <C-W>w
-  nnoremap <C-K> <C-W>W
-  nmap <C-S> <Plug>DWMRotateClockwise
-  nmap <C-Q> <Plug>DWMRotateCounterclockwise
-  nmap <C-N> <Plug>DWMNew
-  nmap <C-C> <Plug>DWMClose
-  nmap <C-Space> <Plug>DWMFocus
-  nmap <C-@> <Plug>DWMFocus
-  nmap <C-L> <Plug>DWMGrowMaster
-
-  command! DWMResetPaneWidth call <SID>dwm_reset_pane_width()
-  command! DWMDisable call <SID>dwm_disable()
-  command! DWMEnable call <SID>dwm_enable()
-"}}} '''
-hook_source = 'let g:dwm_min_master_pane_width = 86'
 
 [[plugins]]
 repo   = 'deton/jasegment.vim'
@@ -143,18 +227,20 @@ hook_add = ''' "{{{
 repo     = 'iamcco/markdown-preview.vim'
 on_map   = ['<Plug>MarkdownPreview', '<Plug>StopMarkdownPreview']
 hook_source = '''
-  let g:mkdp_path_to_chrome = 'open -a Safari'
+  let g:mkdp_path_to_chrome = 'google-chrome'
+'''
+hook_add = '''
+  nmap <leader>p <Plug>MarkdownPreview
+  xmap <leader>p <Plug>MarkdownPreview
 '''
 
 [plugins.ftplugin]
 markdown = ''' "{{{
   nmap <buffer> <A-m> <Plug>MarkdownPreview
   nmap <buffer> <A-M> <Plug>StopMarkdownPreview
-  nmap <buffer> µ <Plug>MarkdownPreview
-  nmap <buffer> Â <Plug>StopMarkdownPreview
 "}}} '''
-
-[[plugins]]
+[[plugins]] # テキスト整形
+# https://wonderwall.hatenablog.com/entry/2016/03/29/215904 <-これ
 repo        = 'junegunn/vim-easy-align'
 on_map      = ['<Plug>(EasyAlign)', '<Plug>(LiveEasyAlign)']
 hook_add    = ''' "{{{
@@ -188,6 +274,7 @@ hook_source = ''' "{{{
         \ }
 "}}} '''
 
+# <Space>mでカーソル下の単語をハイライト
 [[plugins]]
 repo     = 't9md/vim-quickhl'
 on_map   = ['<Plug>(quickhl-', '<Plug>(operator-quickhl-']
@@ -235,7 +322,8 @@ hook_source = ''' "{{{
   let g:EasyMotion_enter_jump_first = 1
 "}}} '''
 
-[[plugins]]
+# 選択行を移動したり，指定した行数だけ空行を追加することができる
+[[plugins]] 
 repo    = 'inkarkat/vim-LineJuggler'
 depends = [
   'vim-repeat',
@@ -262,8 +350,75 @@ hook_add = ''' "{{{
   nmap ]<Space> <Plug>(LineJugglerBlankDown)
 "}}} '''
 # }}}
+# on_ft {{{
+[[plugins]]
+repo  = 'dsawardekar/wordpress.vim'
+on_ft = ['php']
 
+[[plugins]]
+repo        = 'fatih/vim-go'
+on_ft       = ['go']
+hook_source = ''' "{{{
+  let g:go_addtags_transform = 'camelcase'
+  let g:go_alternate_mode = 'split'
+  let g:go_auto_sameids = 1
+  let g:go_auto_type_info = 0
+  let g:go_autodetect_gopath = 0
+  let g:go_def_mapping_enabled = 1
+  let g:go_def_mode = 'godef'
+  let g:go_doc_keywordprg_enabled = 0
+  let g:go_fmt_command = 'goimports'
+  let g:go_fmt_experimental = 1
+  let g:go_fmt_fail_silently = 1
+  let g:go_fmt_options = {'gofmt': '-s'}
+  let g:go_highlight_array_whitespace_error = 1
+  let g:go_highlight_build_constraints = 1
+  let g:go_highlight_chan_whitespace_error = 1
+  let g:go_highlight_extra_types = 1
+  let g:go_highlight_fields = 1
+  let g:go_highlight_functions = 1
+  let g:go_highlight_generate_tags = 1
+  let g:go_highlight_methods = 1
+  let g:go_highlight_operators = 1
+  let g:go_highlight_space_tab_error = 1
+  let g:go_highlight_types = 1
+  let g:go_metalinter_autosave = 0
+  let g:go_metalinter_deadline = '10s'
+  let g:go_template_use_pkg = 1
+"}}} '''
+[plugins.ftplugin]
+go = ''' "{{{
+  if &background ==# 'light'
+    hi! goSameId term=bold cterm=bold ctermbg=225 guibg=#eeeaec
+  else
+    hi! goSameId gui=bold term=bold ctermbg=23 ctermfg=7 guifg=#eee8d5 guibg=#00533f
+  endif
+"}}} '''
 
+[[plugins]]
+repo  = 'junegunn/vader.vim'
+on_ft = ['vader']
+
+[[plugins]]
+repo  = 'msanders/cocoa.vim'
+on_ft = ['objc']
+
+[[plugins]]
+repo    = 'rhysd/vim-textobj-ruby'
+depends = ['vim-textobj-user']
+on_ft   = ['ruby']
+
+[[plugins]]
+repo  = 'rust-lang/rust.vim'
+on_ft = ['rust']
+
+[[plugins]]
+repo = 'tpope/vim-endwise'
+on_ft = [
+    'lua', 'elixir', 'ruby', 'crystal', 'sh', 'zsh', 'vb', 'vbnet',
+    'aspvbs', 'vim', 'c', 'cpp', 'xdefaults', 'objc', 'matlab',
+  ]
+# }}}
 # dependencies {{{
 [[plugins]]
 repo = 'vim-jp/vital.vim'
@@ -272,9 +427,15 @@ on_func = ['vital#vital#new']
 [[plugins]]
 repo = 'vim-scripts/visualrepeat'
 
+[[plugins]]
+repo = 'tpope/vim-repeat'
+
 [[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
 repo = 'osyo-manga/vim-precious'
 
 [[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
 repo = 'Shougo/context_filetype.vim'
+
+[[plugins]]
+repo = 'mattn/webapi-vim'
 # }}}
