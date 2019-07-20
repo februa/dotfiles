@@ -4,4 +4,4 @@ rplugin.vim
 
 nvim/undo/
 
-nvim/dein/package-lock\.json
+nvim/dein/package-lock.json
