@@ -1,12 +1,14 @@
 scriptencoding utf-8
 
+set shellslash
+
 let s:dein_dir = expand('$CACHE/dein')
 let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 if has('python3') && has('win64')
-    let g:python3_host_prog = expand('$HOME\AppData\Local\Programs\Python\Python37\python.exe')
+    let g:python3_host_prog = expand('$HOME/AppData/Local/Programs/Python/Python37/python.exe')
 elseif has('python3') && has('unix')
-    let g:python3_host_prog = expand('/home/leberac/.pyenv/shims/python3')
-    let g:python_host_prog = expand('/home/leberac/.pyenv/shims/python')
+    let g:python3_host_prog = expand('$HOME/.pyenv/shims/python3')
+    let g:python_host_prog = expand('$HOME/.pyenv/shims/python')
 endif
 let g:dein#install_max_processes = 16
 let g:dein#install_message_type = 'echo'
