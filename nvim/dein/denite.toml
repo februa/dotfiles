@@ -1,13 +1,7 @@
 [[plugins]]
-repo = 'spolu/dwm.vim'
-hook_add = '''
-let g:dwm_master_pane_width="66%"
-'''
-[[plugins]]
 repo = 'Shougo/denite.nvim'
 on_cmd   = ['Denite', 'DeniteBufferDir', 'DeniteCursorWord']
 on_func  = ['denite#']
-depends  = ['dwm.vim']
 hook_add = ''' "{{{
 "現在開いているファイルのディレクトリ下のファイル一覧。
 nnoremap <silent> sN :<C-u>DeniteBufferDir file/rec<CR>
@@ -16,23 +10,16 @@ nnoremap <silent> s; :<C-u>Denite buffer<CR>
 " buffer & recent file list
 nnoremap <silent> sm :<C-u>Denite buffer file/old<CR>
 nnoremap <silent> s/ :<C-u>Denite line<CR>
-
 "}}} '''
 hook_post_source = ''' "{{{
 if dein#tap('denite.nvim')
     " Change denite default options
     call denite#custom#option('default', {
-      \ 'split': 'floating',
       \ 'prompt': '>>>',
       \ 'auto-accel': 'true',
       \ 'auto-resize': 'true',
       \ 'filter-updatetime': 100,
       \ })
-	" Change file/rec command.
-    if has('unix')
-        call denite#custom#var('file/rec', 'command',
-        \ ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-    endif
 
 	" Change matchers.
 	call denite#custom#source(
@@ -56,20 +43,6 @@ if dein#tap('denite.nvim')
 		\ ]
 
 	call denite#custom#var('menu', 'menus', s:menus)
-    if has('unix')
-        " Ag command on grep source
-        call denite#custom#var('grep', 'command', ['ag'])
-        call denite#custom#var('grep', 'default_opts',
-                \ ['-i', '--vimgrep'])
-        call denite#custom#var('grep', 'recursive_opts', [])
-        call denite#custom#var('grep', 'pattern_opt', [])
-        call denite#custom#var('grep', 'separator', ['--'])
-        call denite#custom#var('grep', 'final_opts', [])
-    endif
-
-	" Specify multiple paths in grep source
-	"call denite#start([{'name': 'grep',
-	"      \ 'args': [['a.vim', 'b.vim'], '', 'pattern']}])
 
 	" Define alias
 	call denite#custom#alias('source', 'file/rec/git', 'file/rec')
@@ -78,17 +51,17 @@ if dein#tap('denite.nvim')
 
 	call denite#custom#alias('source', 'file/rec/py', 'file/rec')
 	call denite#custom#var('file/rec/py', 'command',['scantree.py'])
+    call denite#custom#alias('source', 'todo', 'grep')
 
 	" Change ignore_globs
 	call denite#custom#filter('matcher/ignore_globs', 'ignore_globs',
-	      \ [ '.git/', '.ropeproject/', '__pycache__/',
+	      \ [ '.git/', '.ropeproject/', '__pycache__/', 'build/',
 	      \   'venv/', 'images/', '*.min.*', 'img/', 'fonts/'])
 
 endif
 " }}} '''
 [plugins.ftplugin]
 denite = ''' "{{{
-  let b:dwm_disabled = 1
   let b:auto_cursorline_disabled = 1
   nnoremap <silent><buffer> <C-j> j
   nnoremap <silent><buffer> <C-k> k
@@ -96,26 +69,19 @@ denite = ''' "{{{
   nnoremap <silent><buffer><expr> <C-a>   denite#do_map('do_action', 'my_file_rec')
   nnoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
   nnoremap <silent><buffer><expr> <C-g>   denite#do_map('do_action', 'grep')
-  nnoremap <silent><buffer><expr> <C-n>   denite#do_map('do_action', 'dwm_new')
   nnoremap <silent><buffer><expr> <C-x>   denite#do_map('do_action', 'quick_move')
   nnoremap <silent><buffer><expr> <CR>    denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select).'j'
   nnoremap <silent><buffer><expr> <Tab>   denite#do_map('choose_action')
+  nnoremap <silent><buffer><expr> <Space> denite#do_map('toggle_select').'j'
   nnoremap <silent><buffer><expr> a       denite#do_map('open_filter_buffer')
   nnoremap <silent><buffer><expr> i       denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> d       denite#do_map('do_action', 'delete')
   nnoremap <silent><buffer><expr> p       denite#do_map('do_action', 'preview')
   nnoremap <silent><buffer><expr> q       denite#do_map('quit')
 "}}} '''
 denite-filter = ''' "{{{
-  let b:dwm_disabled = 1
   let b:auto_cursorline_disabled = 1
-  inoremap <silent><buffer><expr> <BS>    denite#do_map('move_up_path')
+"   inoremap <silent><buffer><expr> <BS>    denite#do_map('move_up_path')
   inoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
   nnoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
 "}}} '''
-[[plugins]]
-repo = 'Shougo/neomru.vim'
-if = '''has('unix')'''
-[[plugins]]
-repo = 'nixprime/cpsm'
-build = 'env PY3=ON ./install.sh'
