@@ -61,9 +61,8 @@ on_source = ['deoplete.nvim']
 repo      = 'Shougo/echodoc.vim'
 on_source = ['deoplete.nvim']
 hook_source = ''' "{{{
-	let g:echodoc#enable_at_startup = 1
-    set cmdheight=2
-	let g:echodoc#type = 'float'
+	let g:echodoc#enable_at_startup = 0
+	let g:echodoc#type = 'echo'
 "}}} '''
 
 [[plugins]]
@@ -76,14 +75,21 @@ hook_post_source = '''
     \ 'max_num_results': 20,
     \ })
 '''
+
 [[plugins]]
-repo = 'zchee/deoplete-zsh'
+repo = 'deoplete-plugins/deoplete-tag'
 on_source = ['deoplete.nvim']
+
 [[plugins]]
-repo        = 'autozimu/LanguageClient-neovim'
+repo = 'deoplete-plugins/deoplete-jedi'
+on_source = ['deoplete.nvim']
+
+[[plugins]]
+repo = 'autozimu/LanguageClient-neovim'
 rev  = 'next'
 on_if = '''has("unix")'''
 build = 'bash install.sh'
+on_source = ['deoplete.nvim']
 on_func   = [
   'LanguageClient#textDocument_definition',
   'LanguageClient#textDocument_hover',
@@ -91,7 +97,6 @@ on_func   = [
   'LanguageClient#textDocument_typeDefinition',
   'LanguageClient#textDocument_formatting',
 ]
-on_source = ['deoplete.nvim']
 hook_source = ''' "{{{
   " for debugging
   " let g:LanguageClient_loggingFile = '/tmp/LanguageClient.log'
@@ -101,8 +106,11 @@ hook_source = ''' "{{{
         \ 'python': ['pyls'],
         \ }
 "}}} '''
+hook_add = ''' "{{{ 
+let g:LanguageClient_windowLogMessageLevel = "Info"
+" }}} ''' 
 hook_post_update = ''' "{{{
-  !python3 -m pip install -U --user python-language-server
+  !pip install --user python-language-server
 "}}} '''
 
 [[plugins]]
@@ -116,6 +124,10 @@ hook_add  = 'let g:tmuxcomplete#trigger = ""'
 
 [[plugins]]
 repo      = 'Shougo/neco-syntax'
+on_source = ['deoplete.nvim']
+
+[[plugins]]
+repo = 'ujihisa/neco-look'
 on_source = ['deoplete.nvim']
 
 [[plugins]]
@@ -139,3 +151,7 @@ if has('nvim')
         \ = 'nvr'
 endif
 '''
+
+[[plugins]]
+repo = 'ncm2/float-preview.nvim'
+on_source = ['deoplete.nvim']
