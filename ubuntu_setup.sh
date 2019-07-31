@@ -29,19 +29,19 @@ yes | sudo apt-get install gedit-plugins
 #====================================================================
 # cuda install
 #====================================================================
-sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+yes | sudo apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
 wget http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-repo-ubuntu1804_10.1.168-1_amd64.deb
-sudo dpkg -i cuda-repo-ubuntu1804_10.1.168-1_amd64.deb
+yes | sudo dpkg -i cuda-repo-ubuntu1804_10.1.168-1_amd64.deb
 sudo apt update
 
-sudo apt install cuda cuda-drivers
+yes | sudo apt install cuda cuda-drivers
 
 #====================================================================
 # cudnn install
 #====================================================================
 echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64 /" | sudo tee /etc/apt/sources.list.d/nvidia-ml.list
 sudo apt update
-sudo apt install libcudnn7-dev=7.5.0.56-1+cuda10.0
+yes | sudo apt install libcudnn7-dev=7.5.0.56-1+cuda10.0
 
 #====================================================================
 # apt dependence packages
@@ -66,7 +66,7 @@ yes | sudo apt install build-essential software-properties-common libfontconfig1
 yes | sudo apt install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+yes | sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
 sudo apt update 
 yes | sudo apt install docker-ce docker-ce-cli containerd.io
 
@@ -79,8 +79,8 @@ sudo gpasswd -a $USER docker
 # snap install
 #====================================================================
 yes | sudo apt install snapd
-yes | sudo snap install --channel=1.10/stable --classic go
 yes | sudo snap install code 
+yes | sudo snap install go --classic
 yes | sudo snap install remmina
 yes | sudo snap install snap-store 
 yes | sudo snap install gitkraken
@@ -89,12 +89,15 @@ yes | sudo snap install gitkraken
 #====================================================================
 # go application install 
 #====================================================================
-go get github.com/motemen/ghq
-curl https://glide.sh/get | sh
-ghq get https://github.com/peco/peco
-ghq look peco 
-glide install
-go install cmd/peco/peco.go
+# yes | sudo add-apt-repository ppa:gophers/archive
+# sudo apt update
+
+# go get github.com/motemen/ghq
+# curl https://glide.sh/get | sh
+# ghq get https://github.com/peco/peco
+# ghq look peco 
+# glide install
+# go install cmd/peco/peco.go
 
 #====================================================================
 # fish install
@@ -143,10 +146,10 @@ yes | sudo apt-get install flashplugin-installer
 wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 
 # google chrome 
-echo 'google chrome'
-sudo sh -c ‘echo “deb http://dl.google.com/linux/chrome/deb/ stable main” >> /etc/apt/sources.list.d/google.list’
-sudo wget -q -O – https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sudo apt-get install google-chrome-stable
+# echo 'google chrome'
+# sudo sh -c ‘echo “deb http://dl.google.com/linux/chrome/deb/ stable main” >> /etc/apt/sources.list.d/google.list’
+# sudo wget -q -O – https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+# sudo apt-get install google-chrome-stable
 
 #====================================================================
 # Python開発環境構築
@@ -170,15 +173,15 @@ yes | sudo pip install neovim neovim-remote
 #====================================================================
 # neovim install 
 #====================================================================
-ghq get https://github.com/neovim/neovim
-ghq look neovim 
-make CMAKE_BUILD_TYPE=Release -j8
-sudo make install
+#ghq get https://github.com/neovim/neovim
+# ghq look neovim 
+#make CMAKE_BUILD_TYPE=Release -j8
+#sudo make install
 
 #====================================================================
 # その他
 #====================================================================
 echo 'その他にインストールするもの'
-echo 'dropbox'
-echo 'FileZilla'
-echo 'slack'
+echo 'go'
+echo 'neovim'
+echo 'chrome'
