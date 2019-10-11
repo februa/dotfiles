@@ -1,54 +1,3 @@
-[ftplugin] #{{{
-css = 'setlocal iskeyword+=-'
-
-help = 'setlocal nolist nonumber norelativenumber'
-
-html_javascript = ''' "{{{
-  setlocal tabstop=2
-  setlocal shiftwidth=2
-  setlocal softtabstop=2
-"}}} '''
-
-json = ''' "{{{
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-  setlocal softtabstop=4
-  setlocal nocursorcolumn
-"}}} '''
-
-python = ''' "{{{
-  setlocal tabstop=4
-  setlocal softtabstop=4
-  setlocal shiftwidth=4
-
-"}}} '''
-
-ruby = ''' "{{{
-  setlocal tabstop=2
-  setlocal shiftwidth=2
-  setlocal softtabstop=2
-
-  function! s:rspec_syntax_highlight()
-    hi def link rubyRailsTestMethod Function
-    syn keyword rubyRailsTestMethod describe context it its specify shared_context shared_examples shared_examples_for shared_context include_examples include_context it_should_behave_like it_behaves_like before after around subject fixtures controller_name helper_name scenario feature background given described_class
-    syn match rubyRailsTestMethod '\<let\>!\='
-    syn keyword rubyRailsTestMethod violated pending expect expect_any_instance_of allow allow_any_instance_of double instance_double mock mock_model stub_model xit
-    syn match rubyRailsTestMethod '\.\@<!\<stub\>!\@!'
-  endfunction
-
-  autocmd Syntax ruby if ! RailsDetect() | call s:rspec_syntax_highlight() | endif
-"}}} '''
-
-toml = 'setlocal foldmethod=marker'
-
-vim = ''' "{{{
-"}}} '''
-
-dockerfile = 'setlocal foldmethod=indent'
-
-#}}}
-
-# Shougowares and their dependencies {{{
 [[plugins]]
 repo = 'Shougo/dein.vim'
 
@@ -69,30 +18,6 @@ hook_post_update = ''' "{{{
   let g:dein#plugin.build = cmd
 "}}} '''
 
-
-[[plugins]]
-repo = 'fishbullet/deoplete-ruby'
-
-[[plugins]]
-repo = 'rafi/vim-denite-z'
-
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-hook_add = '''
-  " Set path for python3 for python37u packages in CentOS7
-  if !executable('python3') && executable('python3.7')
-    let g:python3_host_prog = exepath('python3.7')
-  endif
-'''
-[[plugins]]
-repo = 'roxma/vim-hug-neovim-rpc'
-
-[[plugins]]
-repo = 'ujihisa/neco-look'
-
-# }}}
-
-# for lightline {{{
 [[plugins]]
 repo     = 'airblade/vim-gitgutter'
 hook_add = ''' "{{{
@@ -154,12 +79,12 @@ repo     = 'itchyny/lightline.vim'
 [[plugins]]
 repo     = 'majutsushi/tagbar'
 hook_add = ''' "{{{
-  let g:tagbar_left = 1
-  let g:tagbar_autoclose = 1
+  let g:tagbar_left = 0
+  let g:tagbar_autoclose = 0
   let g:tagbar_autofocus = 1
-  let g:tagbar_show_linenumbers = 1
+  let g:tagbar_show_linenumbers = 0
   let g:tagbar_iconchars = [nr2char(0xe5ff) . ' ', nr2char(0xe5fe) . ' '] "  , 
-  let g:tagbar_autopreview = 1
+  let g:tagbar_autopreview = 0
   augroup TagbarWindow
     autocmd!
     autocmd BufWinEnter * if &previewwindow | setlocal nonumber norelativenumber | endif
@@ -169,10 +94,7 @@ hook_add = ''' "{{{
 
 [[plugins]]
 repo     = 'w0rp/ale'
-#repo     = 'delphinus/ale'
-#rev      = 'feature/detect-note-in-mypy'
-hook_add = '''
-
+hook_add = ''' "{{{
 " nr2char(...) is for describing icons from devicons
 let g:ale_echo_msg_error_str = nr2char(0xf421) . ' '
 let g:ale_echo_msg_warning_str = nr2char(0xf420) . ' '
@@ -187,21 +109,17 @@ let g:ale_statusline_format = [
       \ nr2char(0xf4a1) . '  ']
   let g:ale_fix_on_save = 1
   let g:ale_completion_enabled = 1
+  let g:ale_lint_on_text_changed = 'always'
   let g:ale_sh_shellcheck_options = '-x'
-  let g:ale_python_pylint_change_directory = 0
-  let g:ale_python_mypy_options = '--ignore-missing-imports --show-column-numbers --strict'
-  let g:ale_python_mypy_detect_notes = 1
-  let g:ale_lint_on_enter = 1
-  let g:ale_lint_on_save = 1
-  let g:ale_keep_list_window_open = 1
+  let g:ale_cpp_clangd_options = '-compile-commands-dir=' . getcwd()
   let g:ale_fixers = {
         \ 'c': ['clang-format'],
         \ 'cpp': ['clang-format'],
         \ 'python': [ 'autopep8','black', 'isort' ],
         \ }
   let g:ale_linters = {
-        \ 'c': ['clangd'],
-        \ 'cpp': ['clangd'],
+        \ 'c': ['clang'],
+        \ 'cpp': ['clang-check'],
         \ 'vim': [ 'vint' ],
         \ 'python': ['pylint'],
         \ 'tex': ['textlint'],
@@ -231,16 +149,8 @@ repo     = 'airblade/vim-rooter'
 [[plugins]]
 repo = 'delphinus/vim-auto-cursorline'
 
-# [[plugins]] # ruby on railsのプロジェクト管理
-# repo     = 'direnv/direnv.vim'
-# repo     = 'delphinus/direnv.vim'
-# rev      = 'feature/direnv-export-post'
-
 [[plugins]]
-repo     = 'freitass/todo.txt-vim'
-hook_add = '''
-  let g:todo_load_python = 1
-'''
+repo = 'tpope/vim-endwise'
 
 [[plugins]]
 repo = 'tpope/vim-surround'
@@ -379,17 +289,12 @@ repo = 'raphamorim/lucario'
 [[plugins]]
 repo = 'cocopon/iceberg.vim'
 hook_add = '''
-  " autocmd MyAutoCmd ColorScheme * highlight Normal ctermbg=none
-  " autocmd MyAutoCmd ColorScheme * highlight LineNr ctermbg=none
-  " colorscheme 設定は source 後に行う必要があるので VimEnter で行う。
-  " 但し Colorscheme イベントの発生が抑制されないよう nented を付ける。
-  autocmd MyAutoCmd vimenter * nested colorscheme solarized8_high
 '''
 
 [[plugins]]
-#repo     = 'lifepillar/vim-solarized8'
-repo     = 'delphinus/vim-solarized8'
-rev      = 'feature/custom'
+repo     = 'lifepillar/vim-solarized8'
+# repo     = 'delphinus/vim-solarized8'
+# rev      = 'feature/custom'
 hook_add = ''' "{{{
   let g:solarized_diffmode = 'normal'
   let g:solarized_enable_extra_hi_groups = 1
@@ -398,9 +303,7 @@ hook_add = ''' "{{{
 "}}} '''
 
 [[plugins]]
-#repo = 'arcticicestudio/nord-vim'
-repo = 'delphinus/nord-vim'
-rev  = 'feature/custom'
+repo = 'arcticicestudio/nord-vim'
 hook_add = '''
   let g:nord_italic = 1
   let g:nord_italic_comments = 1
@@ -409,7 +312,7 @@ hook_add = '''
   let g:nord_cursor_line_number_background = 1
 "}}} '''
 
-# syntax {{{
+# filetype syntax {{{
 [[plugins]]
 repo = 'bfrg/vim-cpp-modern'
 hook_post_source = ''' "{{{
@@ -428,14 +331,9 @@ let g:cpp_named_requirements_highlight = 1
 repo = 'dag/vim-fish'
 
 [[plugins]]
-repo = 'Glench/Vim-Jinja2-Syntax'
-
-[[plugins]]
-repo = 'HerringtonDarkholme/yats.vim'
-
-[[plugins]]
 repo = 'Vimjas/vim-python-pep8-indent'
 
+# PlantUML
 [[plugins]]
 repo = 'aklt/plantuml-syntax'
 
@@ -445,12 +343,17 @@ repo = 'cespare/vim-toml'
 [[plugins]]
 repo = 'delphinus/vim-toml-dein'
 
-
 [[plugins]]
 repo = 'hail2u/vim-css3-syntax'
 
 [[plugins]]
-repo = 'isobit/vim-caddyfile'
+repo   = 'ap/vim-css-color'
+
+[[plugins]]
+repo   = 'pboettch/vim-cmake-syntax'
+
+[[plugins]]
+repo = 'ekalinin/Dockerfile.vim'
 
 [[plugins]]
 repo = 'plasticboy/vim-markdown'
@@ -461,92 +364,18 @@ hook_add = ''' "{{{
 "}}} '''
 
 [[plugins]]
-repo = 'digitaltoad/vim-jade'
-
-[[plugins]]
 repo = 'isRuslan/vim-es6'
 
 [[plugins]]
-repo = 'kchmck/vim-coffee-script'
-
-[[plugins]]
-repo = 'motemen/xslate-vim'
-
-[[plugins]]
-repo = 'moznion/vim-cpanfile'
-
-
-# }}}
-
-# filetype {{{
-[[plugins]]
-repo   = 'ap/vim-css-color'
-merged = 0
-
-[[plugins]]
 repo = 'asciidoc/vim-asciidoc'
-[[plugins]]
-repo = 'c9s/perlomni.vim'
-
-[[plugins]]
-repo = 'delphinus/vim-rails'
-rev  = 'feature/recognize-ridgepole'
-
-[[plugins]]
-repo = 'delphinus/vim-firestore'
-
-[[plugins]]
-repo = 'kchmck/vim-coffee-script'
-hook_add = '''
-  augroup DetectCSON
-    autocmd!
-    autocmd BufNewFile,BufRead *.cson set filetype=coffee
-  augroup END
-'''
-
-[[plugins]]
-repo = 'ekalinin/Dockerfile.vim'
-
-[[plugins]]
-repo = 'jason0x43/vim-js-indent'
 
 [[plugins]]
 repo = 'pangloss/vim-javascript'
 
-[[plugins]]
-repo     = 'pearofducks/ansible-vim'
-hook_add = '''
-  let g:ansible_name_highlight = 'b'
-  let g:ansible_extra_keywords_highlight = 1
-'''
 
-[[plugins]]
-repo     = 'posva/vim-vue'
-hook_add = '''
-  augroup FileTypeVueIsKeyword
-    autocmd!
-    autocmd FileType vue setlocal iskeyword+=$ | setlocal iskeyword+=-
-  augroup END
-'''
+# }}}
 
-[[plugins]]
-repo = 'ternjs/tern_for_vim'
-hook_add = ''' "{{{
-  let g:tern#command = ['tern']
-  let g:tern#arguments = ['--persistent']
-  augroup TernForVim
-    autocmd!
-    autocmd FileType javascript nnoremap <buffer> <silent> gd :TernDef<CR>
-    autocmd FileType javascript nnoremap <buffer> <silent> <C-]> :TernDef<CR>
-    autocmd FileType javascript nnoremap <buffer> <silent> <C-LeftMouse> :TernDef<CR>
-    autocmd FileType javascript nnoremap <buffer> <silent> <C-w>] :TernDef<CR>
-    autocmd FileType javascript nnoremap <buffer> <silent> <C-w><C-]> :TernDef<CR>
-    autocmd FileType javascript nnoremap <buffer> <silent> K :TernType<CR>
-  augroup END
-"}}} '''
-hook_post_update = '''
-  !npm install -g tern
-'''
+# vim-tmux {{{
 [[plugins]]
 repo = 'tmux-plugins/vim-tmux'
 [[plugins]]
@@ -554,13 +383,19 @@ repo = 'edkolev/tmuxline.vim'
 hook_add = '''
 let g:tmuxline_preset = {
   \'a'    : '#S',
-  \'c'    : ['#(whoami)', '#(uptime | cud -d " " -f 1,2,3)'],
+  \'c'    : '#(whoami)',
   \'win'  : ['#I', '#W'],
-  \'cwin' : ['#I', '#W', '#F'],
-  \'x'    : '#(date)',
-  \'y'    : ['%R', '%a', '%Y'],
+  \'cwin' : ['#I', '#W'],
+  \'x'    : '#{?client_prefix,#[reverse],} prefix key #[default]',
+  \'y'    : ['%R', '%m/%d(%a)'],
   \'z'    : '#H'}
-let g:tmuxline_theme = 'papercolor'
+let g:tmuxline_separators = {
+    \ 'left' : '',
+    \ 'left_alt': '',
+    \ 'right' : '',
+    \ 'right_alt' : '',
+    \ 'space' : ' '}
+let g:tmuxline_status_justify = 'left'
 '''
 # }}}
 
@@ -583,25 +418,6 @@ repo = 'vim-jp/vimdoc-ja'
 [[plugins]]
 repo = 'vim-jp/syntax-vim-ex'
 #}}}
-# dependencies {{{
-[[plugins]]
-repo = 'inkarkat/vim-ingo-library'
-
-[[plugins]]
-repo = 'kana/vim-textobj-user'
-
-[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
-repo = 'osyo-manga/vim-precious'
-
-[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
-repo = 'Shougo/context_filetype.vim'
-
-[[plugins]]
-repo = 'mattn/webapi-vim'
-
-[[plugins]]
-repo = 'xolox/vim-misc'
-# }}}
 [[plugins]]
 repo = 'tyru/caw.vim'
 hook_add = ''' "{{{
@@ -634,6 +450,7 @@ repo = 'tpope/vim-surround'
 [[plugins]]
 repo = 'scrooloose/nerdtree'
 hook_add = ''' "{{{
+let g:NERDTreeWinPos = "right"
 let g:NERDTreeShowBookmarks=1
 let g:NERDTreeShowHidden=1
 let g:NERDTreeQuitOnOpen=1
@@ -641,16 +458,21 @@ let g:NERDTreeMouseMode=2
 let g:NERDTreeDirArrows=0
 let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeBookmarksFile=''
+
+nmap <C-n> :<C-u>NERDTreeToggle<CR>
 "}}} '''
 [[plugins]]
 repo = 'tiagofumo/vim-nerdtree-syntax-highlight'
 on_ft = 'nerdtree'
 depends = 'nerdtree'
-hook_add = 'let g:NERDTreeLimitedSyntax = 1'
+hook_add = ''' 
+let g:NERDTreeLimitedSyntax = 1 
+'''
+
 [[plugins]]
 repo = 'mbbill/undotree'
 hook_add = ''' "{{{
-let g:undotree_WindowLayout = 2         " undotreeは左側/diffは下にウィンドウ幅で表示
+let g:undotree_WindowLayout = 3
 let g:undotree_ShortIndicators = 1      " 時間単位は短く表示
 let g:undotree_SplitWidth = 30          " undotreeのウィンドウ幅
 let g:undotree_SetFocusWhenToggle = 1   " undotreeを開いたらフォーカスする
@@ -667,42 +489,41 @@ endfunction
 "}}} '''
 
 [[plugins]]
-repo = 'tsuyoshiwada/slack-memo-vim'
-depends = 'webapi-vim'
-hook_add= ''' "{{{
-"}}} '''
-[[plugins]]
 repo = 'skanehira/translate.vim'
 on_if = '''executable('gtran')'''
 
 [[plugins]]
-repo = 'gilsondev/searchtasks.vim'
-hook_add = '''
-    
-    command! Todo SearchTasks %
-    let g:searchtasks_list =  [
-        \ 'TODO',
-        \ 'FIXME',
-        \ 'HACK',
-        \ 'XXX',
-        \ 'REVIEW',
-        \ 'OPTIMIZE',
-        \ 'CHANGED',
-        \ 'NOTE',
-        \ 'WARNING',
-        \ 'COMBAK',
-        \ 'IDEA:',
-        \ 'NB',
-        \ 'BUG',
-        \ 'QUESTI',
-        \ 'TEMP',
-        \ 'DEBUG',
-    \ ]
-'''
+repo = 'Yggdroot/indentLine'
 
+# dependencies {{{
+[[plugins]]
+repo = 'inkarkat/vim-ingo-library'
 
 [[plugins]]
-repo = 'Yggdroot/indentLine'
-hook_add = '''
+repo = 'kana/vim-textobj-user'
 
+[[plugins]] # カーソル位置のコンテキストに合わせてftを切り替える
+repo = 'osyo-manga/vim-precious'
+
+[[plugins]] # カーソル位置のコンテキストのftを判定するライブラリ
+repo = 'Shougo/context_filetype.vim'
+
+[[plugins]]
+repo = 'mattn/webapi-vim'
+
+[[plugins]]
+repo = 'xolox/vim-misc'
+
+[[plugins]]
+repo = 'roxma/nvim-yarp'
+hook_add = '''
+  " Set path for python3 for python37u packages in CentOS7
+  if !executable('python3') && executable('python3.7')
+    let g:python3_host_prog = exepath('python3.7')
+  endif
 '''
+
+[[plugins]]
+repo = 'roxma/vim-hug-neovim-rpc'
+# }}}
+

@@ -116,15 +116,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
-
-# ros path
-source /opt/ros/melodic/setup.bash
-ROS_PACKAGE_PATH="${ROS_PACKAGE_PATH}:/home/leberac/src/BagFromImages"
-
 # tmuxinator
 EDITOR='vim'
-
-alias nvimtex="NVIM_LISTEN_ADDRESS=/tmp/nvimsocket nvim"
 
 export XIM=fcitx
 export XIM_PROGRAM=/usr/bin/fcitx
@@ -134,7 +127,11 @@ export QT_IM_MODULE=fcitx
 
 export PATH="/home/leberac/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
 
 export PATH=/usr/local/cuda-10.1/bin:${PATH}
 export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64:${LD_LIBRARY_PATH}
+
+# go 
+export GOPATH=$HOME/go 
+export GOBIN=$GOPATH/bin 
+export PATH=${GOBIN}:${PATH}

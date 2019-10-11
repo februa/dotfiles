@@ -37,22 +37,14 @@ nnoremap ZZ  <Nop>
 inoremap jj  <ESC>
 cnoremap <expr> j
       \ getcmdline()[getcmdpos()-2] ==# 'j' ? "\<BS>\<C-c>" : 'j'
-nnoremap s <Nop>
-nnoremap sj <C-w>j
-nnoremap sk <C-w>k
-nnoremap sl <C-w>l
-nnoremap sh <C-w>h
-nnoremap sJ <C-w>J
-nnoremap sK <C-w>K
-nnoremap sL <C-w>L
-nnoremap sH <C-w>H
-nnoremap s= <C-w>=
-nnoremap sw <C-w>w
-nnoremap so <C-w>_<C-w>|
-nnoremap sO <C-w>=
-nnoremap sn :<C-u>bn<CR>
-nnoremap sp :<C-u>bp<CR>
-nnoremap st :<C-u>tabnew<CR>
-nnoremap ss :<C-u>sp<CR>
-nnoremap sv :<C-u>vs<CR>
-nmap sq :q<CR>
+
+nnoremap s <C-w>
+
+nnoremap <C-j> <C-w>w
+nnoremap bn :<C-u>bNext<CR>
+nnoremap bp :<C-u>bprevious<CR>
+nnoremap bd :<C-u>bdelete<CR>
+nnoremap ts :<C-u>tab split<CR>
+nnoremap tn :<C-u>tabnext<CR>
+nnoremap tp :<C-u>tabprevious<CR>
+nnoremap tc :<C-u>tabclose<CR>

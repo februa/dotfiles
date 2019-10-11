@@ -9,6 +9,8 @@ hook_add = ''' "{{{
   nnoremap <silent> sm :<C-u>Denite buffer file/old<CR>
   nnoremap <silent> s/ :<C-u>Denite -buffer-name=search%`bufnr('%')` line<CR>
   nnoremap <silent> sr :<C-u>Denite -resume<CR>
+  nnoremap <silent> sy :<C-u>Denite yankround<CR>
+
   if has('nvim')
     autocmd BufEnter \[denite\] call s:denite_change_cursorline()
     function! s:denite_change_cursorline() abort
@@ -18,32 +20,10 @@ hook_add = ''' "{{{
       execute 'autocmd BufLeave <buffer> hi Cursorline guibg=' . guibg
     endfunction
   endif
-
-
-  function! s:my_denite_with_pwd(action) abort
-    let pwd = get(b:, '__pwd__', '')
-    if a:action ==# 'grep'
-      call denite#start([{'name': 'grep', 'args': [pwd, '', '!']}])
-    elseif a:action ==# 'my_file_rec'
-      call denite#start([{'name': 'my_file_rec', 'args': [pwd]}])
-    else
-      call denite#start([{'name': a:action, 'args': ['', pwd]}])
-    endif
-  endfunction
 "}}} '''
 
 hook_post_source = ''' "{{{
-
   " from doc
-  function! s:candidate_file_rec(context) abort
-    let path = a:context['targets'][0]['action__path']
-    let dir = denite#util#path2directory(path)
-    let sources_queue = a:context['sources_queue'] + [[
-          \ {'name': 'my_file_rec', 'args': [dir]},
-          \ ]]
-    return {'sources_queue': sources_queue}
-  endfunction
-
   function! s:candidate_grep(context) abort
     let path = a:context['targets'][0]['action__path']
     let dir = denite#util#path2directory(path)
@@ -72,26 +52,26 @@ hook_post_source = ''' "{{{
     return {'sources_queue': sources_queue}
   endfunction
 
-  call denite#custom#var('outline', 'command', ['gtags'])
-  call denite#custom#var('outline', 'options', [])
-  " Ag command on grep source
-  call denite#custom#var('grep', 'command', ['ag'])
-  call denite#custom#var('grep', 'default_opts',
-          \ ['-i', '--vimgrep'])
-  call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'pattern_opt', [])
-  call denite#custom#var('grep', 'separator', ['--'])
-  call denite#custom#var('grep', 'final_opts', [])
-  " Use fd for finding files
-  call denite#custom#var('my_file_rec', 'command',
-        \ ['fd', '--follow', '--hidden', '--exclude', '.git', '.*'])
+  if executable('gtags')
+    call denite#custom#var('outline', 'command', ['gtags'])
+    call denite#custom#var('outline', 'options', [])
+  endif
 
-  call denite#custom#action('buffer,directory,file,openable', 'my_file_rec', function('s:candidate_file_rec'))
+  " Use fd for finding files
   call denite#custom#action('buffer,directory,file,openable', 'grep', function('s:candidate_grep'))
   call denite#custom#action('file', 'grep', function('s:narrow_grep'))
 
   call denite#custom#source('grep', 'args', ['', '', '!'])
   call denite#custom#source('grep', 'converters', ['converter/abbr_word'])
+
+  call denite#custom#source('line', 'matchers', ['matcher_fuzzy'])
+  call denite#custom#source('file/rec', 'matchers', ['matcher_fuzzy','matcher_ignore_globs'])
+  call denite#custom#filter('matcher_ignore_globs', 'ignore_globs',
+      \ [
+      \ '.git/', 'build/', 'dataset/', '__pycache__/',
+      \ 'images/', '*.o', '*.make',
+      \ '*.min.*',
+      \ 'img/', 'fonts/'])
 
   " ref. https://github.com/arcticicestudio/nord-vim/issues/79
   call denite#custom#option('_', {
@@ -102,7 +82,6 @@ hook_post_source = ''' "{{{
         \ 'highlight_matched_char': 'Underlined',
         \ 'matchers': 'matcher/fruzzy',
         \ 'prompt': '>>> ',
-        \ 'statusline': v:false,
         \ })
 
   function! s:denite_detect_size() abort
@@ -122,8 +101,6 @@ hook_post_source = ''' "{{{
     autocmd!
     autocmd VimResized * call <SID>denite_detect_size()
   augroup END
-
-  call s:denite_detect_size()
 
   call denite#custom#option('denite-z', 'default_action', 'narrow')
 
@@ -151,19 +128,11 @@ denite = ''' "{{{
 "}}} '''
 denite-filter = ''' "{{{
   let b:auto_cursorline_disabled = 1
-  inoremap <silent><buffer><expr> <BS>    denite#do_map('move_up_path')
   inoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
   nnoremap <silent><buffer><expr> <C-c>   denite#do_map('quit')
-
-  " These mappings are not recommended in doc.
-  inoremap <silent><buffer> <C-j>   <Esc><C-w>p:call cursor(line('.')+1,0)<CR><C-w>pA
-  inoremap <silent><buffer> <C-k>   <Esc><C-w>p:call cursor(line('.')-1,0)<CR><C-w>pA
 "}}} '''
 
 # denite extra sources
-[[plugins]]
-repo = 'delphinus/vim-denite-memo'
-on_source = ['denite.nvim']
 [[plugins]]
 repo      = 'Jagua/vim-denite-ghq'
 on_source = ['denite.nvim']
@@ -172,31 +141,14 @@ repo      = 'neoclide/denite-git'
 on_source = ['denite.nvim']
 depends   = ['vim-easygit']
 [[plugins]]
+repo = 'rafi/vim-denite-z'
+on_source = ['denite.nvim']
+[[plugins]]
 repo = 'ozelentok/denite-gtags'
 on_source = ['denite.nvim']
 on_if = '''executable('gtags')'''
 hook_add = '''
 nnoremap <leader>d :DeniteCursorWord -buffer-name=gtags_def gtags_def<cr>
-'''
-[[plugins]]
-repo = 'delphinus/vim-denite-memo'
-on_if = '''executable('memo')'''
-
-[[plugins]]
-repo      = 'neoclide/npm.nvim'
-on_source = ['denite.nvim']
-on_if = 'executable("npm")'
-hook_source = ''' "{{{
-  let npm_py = 'rplugin/python3/denite/kind/npm.py'
-  let npm_nvim_npm_py = g:dein#plugin.path . '/' . npm_py
-  let denite = g:dein#_plugins['denite.nvim'].path
-  let denite_npm_py = denite . '/' . npm_py
-  if !filereadable(denite_npm_py)
-    execute '!cp ' . npm_nvim_npm_py . ' ' . denite_npm_py
-  endif
-"}}} '''
-hook_post_update = '''
-  !npm install
 '''
 
 # dependencies {{{
@@ -206,9 +158,9 @@ repo = 'neoclide/vim-easygit'
 [[plugins]]
 repo      = 'raghur/fruzzy'
 on_source = ['denite.nvim']
-hook_add  = ''' "{{{
+hook_add  = '''
   let g:fruzzy#usenative = 0
   let g:fruzzy#sortonempty = 0
-"}}} '''
+'''
 hook_post_update = 'call fruzzy#install()'
 # }}}

@@ -8,10 +8,6 @@ hook_source = '''
 '''
 
 [[plugins]]
-repo   = 'fuenor/JpFormat.vim'
-on_cmd = ['JpFormatAll', 'JpJoinAll']
-
-[[plugins]]
 repo     = 'lambdalisue/vim-gista'
 on_cmd   = ['Gista']
 on_func  = ['gista#']
@@ -62,19 +58,6 @@ hook_post_source = ''' "{{{
 "}}} '''
 
 [[plugins]]
-repo   = 'powerman/vim-plugin-AnsiEsc'
-on_cmd = ['AnsiEsc']
-
-[[plugins]]
-repo   = 'rhysd/ghpr-blame.vim'
-on_cmd = ['GHPRBlame']
-hook_source = '''
-  source ~/.init-ghprblame.vim
-  let g:ghpr_show_pr_mapping = 'ð'
-  let g:ghpr_show_pr_in_message = 1
-'''
-
-[[plugins]]
 repo   = 'rhysd/git-messenger.vim'
 on_cmd = 'GitMessenger'
 on_map = '<Plug>(git-messenger'
@@ -114,11 +97,6 @@ hook_add = '''
   nmap g<CR> <Plug>(openbrowser-smart-search)
   vmap g<CR> <Plug>(openbrowser-smart-search)
 '''
-
-[[plugins]]
-repo   = 'vifm/vifm.vim'
-on_cmd = ['EditVifm', 'VsplitVifm', 'SplitVifm', 'DiffVifm', 'TabVifm']
-on_ft  = ['vifm']
 
 # vim:se fdm=marker:
 # }}}
@@ -291,15 +269,6 @@ hook_add = ''' "{{{
 "}}} '''
 
 [[plugins]]
-repo     = 't9md/vim-choosewin'
-on_map   = ['<Plug>(choosewin)']
-hook_add = 'nmap \ <Plug>(choosewin)'
-hook_source = '''
-  let g:choosewin_statusline_replace = 0
-  let g:choosewin_overlay_enable = 1
-'''
-
-[[plugins]]
 repo     = 'easymotion/vim-easymotion'
 on_cmd   = ['EMCommandLineMap', 'EMCommandLineNoreMap', 'EMCommandLineUnMap']
 on_map   = ['<Plug>(easymotion-']
@@ -349,75 +318,6 @@ hook_add = ''' "{{{
   xmap ]<Space> <Plug>(LineJugglerBlankDown)
   nmap ]<Space> <Plug>(LineJugglerBlankDown)
 "}}} '''
-# }}}
-# on_ft {{{
-[[plugins]]
-repo  = 'dsawardekar/wordpress.vim'
-on_ft = ['php']
-
-[[plugins]]
-repo        = 'fatih/vim-go'
-on_ft       = ['go']
-hook_source = ''' "{{{
-  let g:go_addtags_transform = 'camelcase'
-  let g:go_alternate_mode = 'split'
-  let g:go_auto_sameids = 1
-  let g:go_auto_type_info = 0
-  let g:go_autodetect_gopath = 0
-  let g:go_def_mapping_enabled = 1
-  let g:go_def_mode = 'godef'
-  let g:go_doc_keywordprg_enabled = 0
-  let g:go_fmt_command = 'goimports'
-  let g:go_fmt_experimental = 1
-  let g:go_fmt_fail_silently = 1
-  let g:go_fmt_options = {'gofmt': '-s'}
-  let g:go_highlight_array_whitespace_error = 1
-  let g:go_highlight_build_constraints = 1
-  let g:go_highlight_chan_whitespace_error = 1
-  let g:go_highlight_extra_types = 1
-  let g:go_highlight_fields = 1
-  let g:go_highlight_functions = 1
-  let g:go_highlight_generate_tags = 1
-  let g:go_highlight_methods = 1
-  let g:go_highlight_operators = 1
-  let g:go_highlight_space_tab_error = 1
-  let g:go_highlight_types = 1
-  let g:go_metalinter_autosave = 0
-  let g:go_metalinter_deadline = '10s'
-  let g:go_template_use_pkg = 1
-"}}} '''
-[plugins.ftplugin]
-go = ''' "{{{
-  if &background ==# 'light'
-    hi! goSameId term=bold cterm=bold ctermbg=225 guibg=#eeeaec
-  else
-    hi! goSameId gui=bold term=bold ctermbg=23 ctermfg=7 guifg=#eee8d5 guibg=#00533f
-  endif
-"}}} '''
-
-[[plugins]]
-repo  = 'junegunn/vader.vim'
-on_ft = ['vader']
-
-[[plugins]]
-repo  = 'msanders/cocoa.vim'
-on_ft = ['objc']
-
-[[plugins]]
-repo    = 'rhysd/vim-textobj-ruby'
-depends = ['vim-textobj-user']
-on_ft   = ['ruby']
-
-[[plugins]]
-repo  = 'rust-lang/rust.vim'
-on_ft = ['rust']
-
-[[plugins]]
-repo = 'tpope/vim-endwise'
-on_ft = [
-    'lua', 'elixir', 'ruby', 'crystal', 'sh', 'zsh', 'vb', 'vbnet',
-    'aspvbs', 'vim', 'c', 'cpp', 'xdefaults', 'objc', 'matlab',
-  ]
 # }}}
 # dependencies {{{
 [[plugins]]

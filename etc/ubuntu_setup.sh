@@ -1,4 +1,13 @@
 #!/bin/bash
+cd `dirname $0`
+
+#==================================================================== 
+# copy rcfiles
+#====================================================================
+cp ../.vimrc ../.bashrc ../.bash_aliases ../.bash_profile ../.latexmkrc ../.tmux.conf ~/
+cp -r ../fish ~/.config/
+source ~/.bashrc
+
 #====================================================================
 # aptのアップデート
 #====================================================================
@@ -47,7 +56,7 @@ yes | sudo apt install libcudnn7-dev=7.5.0.56-1+cuda10.0
 # apt dependence packages
 #====================================================================
 yes | sudo apt install git gcc g++ clang-8 make cmake zip tar curl wget lsb-release fcitx
-yes | sudo apt install build-essential software-properties-common libfontconfig1\
+yes | sudo apt install -y build-essential software-properties-common libfontconfig1\
     libbz2-dev libdb-dev libreadline-dev libffi-dev libgdbm-dev liblzma-dev \
     libblas-dev libncursesw5-dev libsqlite3-dev libssl-dev libboost-all-dev \
     zlib1g-dev uuid-dev tk-dev libbz2-dev libeigen3-dev libflann-dev \
@@ -59,6 +68,9 @@ yes | sudo apt install build-essential software-properties-common libfontconfig1
     libtiff-dev libtbb-dev libgtk-3-dev libhdf5-dev libicu-dev libjpeg-dev \
     libdb-dev liblua5.2-dev libtool libtool-bin 
   
+# clangd install 
+yes | sudo apt install clang-tools-8 
+sudo update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-8 100
 
 #====================================================================
 # docker install
@@ -75,6 +87,7 @@ curl -sL https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
 sudo apt update
 yes | sudo apt install nvidia-docker2
 sudo gpasswd -a $USER docker
+
 #====================================================================
 # snap install
 #====================================================================
@@ -89,35 +102,24 @@ yes | sudo snap install gitkraken
 #====================================================================
 # go application install 
 #====================================================================
-# yes | sudo add-apt-repository ppa:gophers/archive
-# sudo apt update
-
-# go get github.com/motemen/ghq
-# curl https://glide.sh/get | sh
-# ghq get https://github.com/peco/peco
-# ghq look peco 
-# glide install
-# go install cmd/peco/peco.go
+go get github.com/motemen/ghq
+ghq get https://github.com/peco/peco
+ghq look peco 
+go install cmd/peco/peco.go
 
 #====================================================================
 # fish install
 #====================================================================
 yes | sudo apt install fish 
 sudo sed -e '$a /usr/local/bin/fish' /etc/shells 
-sudo chsh -s /usr/local/bin/fish
+chsh -s /usr/bin/fish
 curl -Lo ~/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
 
-/usr/local/bin/fish
 fisher add oh-my-fish/theme-clearance
 fisher add z 
 fisher add 0rax/fish-bd 
 fisher add oh-my-fish/plugin-peco 
 fisher add oh-my-fish/plugin-balias 
-
-#====================================================================
-# コマンドラインツール
-#====================================================================
-yes | sudo apt install hub
 
 #====================================================================
 # Ubuntu Web Apps(Gmail/Amazon/Twitter/Facebook)削除
@@ -133,7 +135,8 @@ sudo chmod 644 /etc/cron.daily/mlocate
 #====================================================================
 # Tex install
 #====================================================================
-sudo apt install texlive-full texlive-lang-cjk xdvik-ja texlive-fonts-recommended texlive-fonts-extra
+yes | sudo apt install texlive-full texlive-lang-cjk xdvik-ja texlive-fonts-recommended texlive-fonts-extra
+
 #====================================================================
 # ソフトウェアインストール
 #====================================================================
@@ -142,22 +145,13 @@ yes | sudo apt-get install tree curl eog evince nkf
 yes | sudo apt-get install imagemagick pdftk vim xsel
 yes | sudo apt-get install flashplugin-installer
 
-# heroku-toolbelt
-wget -qO- https://toolbelt.heroku.com/install-ubuntu.sh | sh
-
-# google chrome 
-# echo 'google chrome'
-# sudo sh -c ‘echo “deb http://dl.google.com/linux/chrome/deb/ stable main” >> /etc/apt/sources.list.d/google.list’
-# sudo wget -q -O – https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-# sudo apt-get install google-chrome-stable
-
 #====================================================================
 # Python開発環境構築
 #====================================================================
 # pyenv 
 git clone git://github.com/yyuu/pyenv.git $HOME/.pyenv 
-set -x PATH $HOME/.pyenv/bin $PATH
-eval (pyenv init - | source)
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "(pyenv init -)"
 pyenv install 2.7.16 
 pyenv install 3.7.3 
 pyenv global 3.7.3 
@@ -166,17 +160,32 @@ pyenv global 3.7.3
 # pipで入れれる便利ツール
 #====================================================================
 # trash-cli : http://tukaikta.blog135.fc2.com/blog-entry-214.html
-yes | sudo pip install trash-cli
-yes | sudo pip install neovim neovim-remote
-
+pip install trash-cli
+pip install neovim neovim-remote
+pip install compdb
 
 #====================================================================
 # neovim install 
 #====================================================================
-#ghq get https://github.com/neovim/neovim
-# ghq look neovim 
-#make CMAKE_BUILD_TYPE=Release -j8
-#sudo make install
+ghq get https://github.com/neovim/neovim
+ghq look neovim 
+make CMAKE_BUILD_TYPE=Release -j8
+sudo make install
+ghq get https://github.com/februa/dotfiles 
+ghq look dotfiles 
+git checkout vim-unix 
+ln -s `pwd`/nvim ~/.config/ 
+
+#==================================================================== 
+# SauceCodePro font install
+#====================================================================
+mkdir ~/.fonts 
+wget -O ~/Downloads/SourceCodePro.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/SourceCodePro.zip 
+unzip ~/Downloads/SourceCodePro.zip -d ~/.fonts/SourceCodePro 
+fc-cache -fv
+UUID=$(gsettings get org.gnome.Terminal.ProfilesList default | tr -d \')
+gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:${UUID}/ font "SauceCodePro NF Medium 12"
+
 
 #====================================================================
 # その他
