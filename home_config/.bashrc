@@ -119,17 +119,11 @@ fi
 # tmuxinator
 EDITOR='vim'
 
-export XIM=fcitx
-export XIM_PROGRAM=/usr/bin/fcitx
-export XIM_ARGS=""
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/shims:$PATH"
+export PATH="$PYENV_ROOT/bin:$PATH"
 
-export PATH="/home/leberac/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
-
-export PATH=/usr/local/cuda-10.1/bin:${PATH}
-export LD_LIBRARY_PATH=/usr/local/cuda-10.1/lib64:${LD_LIBRARY_PATH}
 
 # go 
 export GOPATH=$HOME/go 
