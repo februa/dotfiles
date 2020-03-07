@@ -115,7 +115,7 @@ fi
 #====================================================================
 ghq get https://github.com/februa/dotfiles 
 cd `ghq root`/github.com/februa/dotfiles/etc
-git checkout vim-unix
+git checkout wsl2
 ln -sf `readlink -f ${conf[@]}` $HOME
 ln -sf `readlink -f ../nvim` $HOME/.config
 ln -sf `readlink -f ../fish` $HOME/.config
