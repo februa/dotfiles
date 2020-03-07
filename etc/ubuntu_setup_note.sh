@@ -29,70 +29,93 @@ sudo apt-get upgrade -y
 
 # apt dependence packages
 #====================================================================
-sudo apt-get install -y git gcc g++ make cmake zip tar curl wget lsb-release \
+sudo apt-get install -y git gcc g++ make cmake zip tar curl wget lsb-release
 sudo apt-get install -y build-essential software-properties-common libx11-dev \
-    liblua5.2-dev openssh-server
+    liblua5.2-dev openssh-server libtool libtool-bin
 sudo apt-get install -y tree curl nkf
 sudo apt-get install -y vim xsel
+
+# neovim required packages
+sudo apt-get install -y ninja-build gettext libtool libtool-bin autoconf automake cmake g++ pkg-config unzip
 
 #====================================================================
 # fish install
 #====================================================================
-sudo apt-get install -y fish 
-sudo sed -e '$a /usr/local/bin/fish' /etc/shells 
-chsh -s /usr/bin/fish
-curl -Lo $HOME/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
+if ! type "fish" > /dev/null 2>&1; then
+    sudo apt-get install -y fish 
+    sudo sed -e '$a /usr/local/bin/fish' /etc/shells 
+    chsh -s /usr/bin/fish
+    curl -Lo $HOME/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
 
+    if type "fish" > /dev/null 2>&1; then
+        fish $HOME/.config/fish/functions/fisher.fish
+    fi
+fi
 #====================================================================
 # go install
 #====================================================================
-sudo add-apt-repository -y ppa:longsleep/golang-backports
-sudo apt-get update
-sudo apt-get install -y golang-go
+if ! type "go" > /dev/null 2>&1; then
+    sudo add-apt-repository -y ppa:longsleep/golang-backports
+    sudo apt-get update
+    sudo apt-get install -y golang-go
+fi
 
 # ghq 
-go get github.com/motemen/ghq
+if ! type "ghq" > /dev/null 2>&1; then
+    go get github.com/motemen/ghq
+fi
 
 # peco
-ghq get https://github.com/peco/peco
-ghq look peco 
-go install cmd/peco/peco.go
+if ! type "peco" > /dev/null 2>&1; then
+    ghq get https://github.com/peco/peco
+    cd `ghq root`/github.com/peco/peco
+    go install cmd/peco/peco.go
+fi
 
 # gotop
-go get github.com/cjbassi/gotop
+if ! type "gotop" > /dev/null 2>&1; then
+    go get github.com/cjbassi/gotop
+fi
 
 # docui
-go get -d github.com/skanehira/docui
-cd $GOPATH/src/github.com/skanehira/docui
-GO111MODULE=on go install
+if ! type "docui" > /dev/null 2>&1; then
+    go get -d github.com/skanehira/docui
+    cd $GOPATH/src/github.com/skanehira/docui
+    GO111MODULE=on go install
+fi
 
 #====================================================================
 # Python開発環境構築
 #====================================================================
 # pyenv 
-git clone git://github.com/yyuu/pyenv.git $HOME/.pyenv 
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "(pyenv init -)"
-pyenv install 3.7.3 
-pyenv global 3.7.3 
+if ! type "pyenv" > /dev/null 2>&1; then
+    git clone git://github.com/yyuu/pyenv.git $HOME/.pyenv 
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    pyenv install 3.7.3 
+    pyenv global 3.7.3 
 
-pip install fzy unar trash-cli
-pip install neovim neovim-remote
+    pip install fzy unar trash-cli
+    pip install neovim neovim-remote
+fi
+
 
 #====================================================================
 # neovim install 
 #====================================================================
-ghq get https://github.com/neovim/neovim
-ghq look neovim 
-make CMAKE_BUILD_TYPE=Release -j8
-sudo make install
-ghq get https://github.com/februa/dotfiles 
-ghq look dotfiles 
-git checkout vim-unix 
+if ! type "nvim" > /dev/null 2>&1; then
+    ghq get https://github.com/neovim/neovim
+    cd `ghq root`/github.com/neovim/neovim
+    make CMAKE_BUILD_TYPE=Release -j8
+    sudo make install
+fi
 
-fish 
-fisher add oh-my-fish/theme-clearance
-fisher add z 
-fisher add 0rax/fish-bd 
-fisher add gyakovlev/fish-fzy
-fisher add oh-my-fish/plugin-balias 
+#==================================================================== 
+# Update symboric link
+#====================================================================
+ghq get https://github.com/februa/dotfiles 
+cd `ghq root`/github.com/februa/dotfiles/etc
+git checkout vim-unix
+ln -sf `readlink -f ${conf[@]}` $HOME
+ln -sf `readlink -f ../nvim` $HOME/.config
+ln -sf `readlink -f ../fish` $HOME/.config
