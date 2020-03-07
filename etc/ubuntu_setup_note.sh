@@ -116,6 +116,16 @@ fi
 ghq get https://github.com/februa/dotfiles 
 cd `ghq root`/github.com/februa/dotfiles/etc
 git checkout wsl2
+conf=(  "../home_config/.bash_aliases" 
+        "../home_config/.bash_profile" 
+        "../home_config/.bashrc" 
+        "../home_config/.gitconfig" 
+        "../home_config/.gitignore" 
+        "../home_config/.latexmkrc" 
+        "../home_config/.tmux" 
+        "../home_config/.tmux.conf" 
+        "../home_config/.vimrc" 
+)
 ln -sf `readlink -f ${conf[@]}` $HOME
 ln -sf `readlink -f ../nvim` $HOME/.config
 ln -sf `readlink -f ../fish` $HOME/.config
