@@ -4,7 +4,7 @@ cd `dirname $0`
 #==================================================================== 
 # create symboric link
 #====================================================================
-mkdir -p $HOME/.config
+mkdir -p $HOME/.config $HOME/.local/bin
 conf=(  "../home_config/.bash_aliases" 
         "../home_config/.bash_profile" 
         "../home_config/.bashrc" 
@@ -21,11 +21,17 @@ ln -sf `readlink -f ../fish` $HOME/.config
 
 source ${HOME}/.bashrc
 
+#====================================================================
+# aptのアップデート
+#====================================================================
+sudo apt-get update
+sudo apt-get upgrade -y
+
 # apt dependence packages
 #====================================================================
 sudo apt-get install -y git gcc g++ make cmake zip tar curl wget lsb-release \
 sudo apt-get install -y build-essential software-properties-common libx11-dev \
-    libdb-dev liblua5.2-dev openssh-server
+    liblua5.2-dev openssh-server
 sudo apt-get install -y tree curl nkf
 sudo apt-get install -y vim xsel
 
@@ -36,12 +42,6 @@ sudo apt-get install -y fish
 sudo sed -e '$a /usr/local/bin/fish' /etc/shells 
 chsh -s /usr/bin/fish
 curl -Lo $HOME/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
-
-fisher add oh-my-fish/theme-clearance
-fisher add z 
-fisher add 0rax/fish-bd 
-fisher add gyakovlev/fish-fzy
-fisher add oh-my-fish/plugin-balias 
 
 #====================================================================
 # go install
@@ -89,4 +89,10 @@ sudo make install
 ghq get https://github.com/februa/dotfiles 
 ghq look dotfiles 
 git checkout vim-unix 
-ln -s `pwd`/nvim $HOME/.config/ 
+
+fish 
+fisher add oh-my-fish/theme-clearance
+fisher add z 
+fisher add 0rax/fish-bd 
+fisher add gyakovlev/fish-fzy
+fisher add oh-my-fish/plugin-balias 
