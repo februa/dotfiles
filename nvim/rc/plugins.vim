@@ -6,7 +6,7 @@ let s:dein_dir = expand('$CACHE/dein')
 let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 let g:dein#install_max_processes = 16
 let g:dein#install_message_type = 'echo'
-let g:dein#auto_recache = 1
+let g:dein#auto_recache = 0
 let g:dein#install_progress_type = 'tabline'
 let g:dein#enable_notification = 1
 let g:dein#types#git#clone_depth = 1
@@ -28,10 +28,11 @@ endif
 if dein#load_state(s:dein_dir)
   let s:toml = [
     \ {'name': 'default'},
-    \ {'name': 'ftplugin'},
     \ {'name': 'denite',   'lazy': 1},
+    "\ {'name': 'vim-lsp'},
     \ {'name': 'deoplete', 'lazy': 1},
     \ {'name': 'lazy',     'lazy': 2},
+    \ {'name': 'ftplugin'},
     \ ]
   let s:path = {name -> expand('$CONFIG/nvim/dein/' . name . '.toml')}
   let s:load_toml = {name, lazy -> dein#load_toml(s:path(name), {'lazy': lazy})}
@@ -39,15 +40,11 @@ if dein#load_state(s:dein_dir)
   call dein#begin(s:dein_dir, map(deepcopy(s:toml), {_, t -> t['name']}))
   call map(s:toml, {_, t -> s:load_toml(t['name'], get(t, 'lazy', 0))})
   call dein#end()
-
-
   call dein#save_state()
 
 endif
 
 " ColorScheme:
-" autocmd MyAutoCmd ColorScheme * highlight Normal ctermbg=none
-" autocmd MyAutoCmd ColorScheme * highlight LineNr ctermbg=none
 autocmd MyAutoCmd vimenter * nested colorscheme solarized8_high
 
 

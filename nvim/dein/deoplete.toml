@@ -1,7 +1,7 @@
 [[plugins]]
 repo        = 'Shougo/deoplete.nvim'
 on_event    = ['InsertEnter']
-depends     = ['nvim-yarp', 'vim-hug-neovim-rpc']
+depends     = ['vim-hug-neovim-rpc']
 do = ':UpdateRemotePlugins'
 hook_source = ''' "{{{
   let g:deoplete#enable_at_startup = 1
@@ -40,7 +40,6 @@ hook_post_source = ''' "{{{
         \ 'ignore_sources': {
         \   'denite-filter': ['look'],
         \ },
-        \ 'yarp': v:true,
         \ 'smart_case': v:true,
         \ 'skip_multibyte': v:true,
         \ 'prev_completion_mode': "mirror",
@@ -57,7 +56,7 @@ repo      = 'Shougo/neoinclude.vim'
 on_source = ['deoplete.nvim']
 hook_add = ''' 
 if !exists('g:neoinclude#exts')
-    let g:neoinclude#exts = {}
+  let g:neoinclude#exts = {}
 endif
 let g:neoinclude#exts.cpp = ['', 'h', 'hpp', 'hxx']
 ''' #}}}
@@ -90,35 +89,6 @@ hook_add  = 'let g:tmuxcomplete#trigger = ""'
 repo      = 'deoplete-plugins/deoplete-jedi'
 on_source = ['deoplete.nvim']
 # }}}
-# lsp {{{
-[[plugins]]
-repo        = 'lighttiger2505/deoplete-vim-lsp'
-on_source = ['deoplete.nvim']
-depends     = ['vim-lsp', 'async.vim']
-hook_source = '''
-" For python language server
-if (executable('pyls'))
-    let s:pyls_path = fnamemodify(g:python_host_prog, ':h') . '/'. 'pyls'
-    augroup LspPython
-        autocmd User lsp_setup call lsp#register_server({
-      \ 'name': 'pyls',
-      \ 'cmd': {server_info->['pyls']},
-      \ 'whitelist': ['python']
-      \ })
-    augroup END
-endif
-" For cpp language server
-if (executable('clangd'))
-    augroup LspCPP
-        autocmd User lsp_setup call lsp#register_server({
-      \ 'name': 'clangd',
-      \ 'cmd': {server_info->['clangd', '-compile-commands-dir=' . getcwd()]},
-      \ 'whitelist': ['cpp', 'c']
-      \ })
-    augroup END
-endif
-'''
-# }}}
 # LanguageClient {{{
 [[plugins]]
 repo = 'autozimu/LanguageClient-neovim'
@@ -144,6 +114,7 @@ hook_source = ''' "{{{
   let g:LanguageClient_serverCommands = {
         \ 'cpp': ['clangd', '-compile-commands-dir=' . getcwd()],
         \ 'python': ['pyls'],
+        \ 'tex': ['texlab'],
         \ }
   let g:LanguageClient_rootMarkers = {
         \ 'c': ['CMakeLists.txt'],
@@ -175,10 +146,8 @@ repo = 'Shougo/neosnippet.vim'
 on_source = ['deoplete.nvim']
 depends = ['neosnippet-snippets']
 hook_add = '''
-	" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-	imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-	smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-	xmap <C-k>     <Plug>(neosnippet_expand_target)
+  let g:deoplete#enable_at_startup = 1
+  let g:neosnippet#enable_completed_snippet = 1
 
   imap <expr><C-l>
   \ neosnippet#expandable() <Bar><Bar> neosnippet#jumpable() ?
@@ -200,8 +169,8 @@ on_ft = 'tex'
 on_if = '''has("unix") || has("mac")'''
 hook_post_source = ''' "{{{
 call deoplete#custom#var('omni', 'input_patterns', {
-    \ 'tex': g:vimtex#re#deoplete
-    \})
+      \ 'tex': g:vimtex#re#deoplete
+      \})
 "}}} '''
 hook_add = ''' "{{{
 if has('mac')
@@ -213,12 +182,28 @@ if has('nvim')
   let g:vimtex_compiler_progname
         \ = 'nvr'
 endif
+
+let g:vimtex_indent_delims = {
+      \ 'open' : ['{'],
+      \ 'close' : ['}'],
+      \ 'close_indented' : 0,
+      \ 'include_modified_math' : 0,
+      \}
+
+let g:matchup_override_vimtex = 0
+
 "}}} '''
+
+[[plugins]]
+repo = 'wokalski/autocomplete-flow'
+on_source = ['deoplete.nvim']
+build = 'npm install -g flow_bin'
 
 # ()を自動で閉じる
 [[plugins]]
 repo      = 'Shougo/neopairs.vim'
 on_source = ['deoplete.nvim']
+
 # コマンドラインの補完からシグネチャを表示する
 [[plugins]]
 repo      = 'Shougo/echodoc.vim'

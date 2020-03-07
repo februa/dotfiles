@@ -28,11 +28,11 @@ set smarttab
 " Exchange tab to spaces.
 set expandtab
 " Substitute <Tab> with blanks.
-set tabstop=4
+set tabstop=2
 " Spaces instead <Tab>.
 set softtabstop=0
 " Autoindent width.
-set shiftwidth=4
+set shiftwidth=2
 " Round indent by shiftwidth.
 set shiftround
 " Enable smart indent.

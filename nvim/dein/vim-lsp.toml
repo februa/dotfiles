@@ -1,0 +1,38 @@
+[[plugins]]
+repo = 'prabirshrestha/async.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/asyncomplete-lsp.vim'
+
+[[plugins]]
+repo = 'prabirshrestha/vim-lsp'
+
+[[plugins]]
+repo = 'mattn/vim-lsp-settings'
+hook_add = '''
+	if (executable('clangd-8'))
+	    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd-8']},
+        \ 'whitelist': ['cpp', 'c']
+		\ })
+	endif
+	if (executable('pyls'))
+	    au User lsp_setup call lsp#register_server({
+		\ 'name': 'pyls',
+		\ 'cmd': {server_info->['pyls']},
+		\ 'whitelist': ['python']
+		\ })
+	endif
+  if (executable('texlab'))
+	    au User lsp_setup call lsp#register_server({
+		\ 'name': 'texlab',
+		\ 'cmd': {server_info->['texlab']},
+		\ 'whitelist': ['tex']
+		\ })
+	endif
+  let g:lsp_settings_servers_dir = expand('$CACHE/server')
+'''

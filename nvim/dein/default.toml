@@ -315,6 +315,7 @@ hook_add = '''
 # filetype syntax {{{
 [[plugins]]
 repo = 'bfrg/vim-cpp-modern'
+on_ft = ['cpp']
 hook_post_source = ''' "{{{
 " Disable function highlighting (affects both C and C++ files)
 let g:cpp_no_function_highlight = 1
@@ -329,50 +330,35 @@ let g:cpp_named_requirements_highlight = 1
 
 [[plugins]]
 repo = 'dag/vim-fish'
+on_ft = ['fish']
 
 [[plugins]]
 repo = 'Vimjas/vim-python-pep8-indent'
-
-# PlantUML
-[[plugins]]
-repo = 'aklt/plantuml-syntax'
+on_ft = ['python']
 
 [[plugins]]
 repo = 'cespare/vim-toml'
+on_ft = ['toml']
 
 [[plugins]]
 repo = 'delphinus/vim-toml-dein'
-
-[[plugins]]
-repo = 'hail2u/vim-css3-syntax'
-
-[[plugins]]
-repo   = 'ap/vim-css-color'
+on_ft = ['toml']
 
 [[plugins]]
 repo   = 'pboettch/vim-cmake-syntax'
 
 [[plugins]]
 repo = 'ekalinin/Dockerfile.vim'
+on_ft = ['Dockerfile']
 
 [[plugins]]
 repo = 'plasticboy/vim-markdown'
+on_ft = ['markdown']
 hook_add = ''' "{{{
   let g:vim_markdown_conceal = 0
   let g:vim_markdown_folding_disabled = 1
   let g:vim_markdown_new_list_item_indent = 2
 "}}} '''
-
-[[plugins]]
-repo = 'isRuslan/vim-es6'
-
-[[plugins]]
-repo = 'asciidoc/vim-asciidoc'
-
-[[plugins]]
-repo = 'pangloss/vim-javascript'
-
-
 # }}}
 
 # vim-tmux {{{
@@ -402,11 +388,9 @@ let g:tmuxline_status_justify = 'left'
 # vim-script {{{
 [[plugins]] # 色をハイライトさせる
 repo = 'vim-scripts/HiColors'
-
 [[plugins]]
 repo = 'vim-scripts/autodate.vim'
 hook_add = '''let g:autodate_format = '%FT%T%z' '''
-
 [[plugins]]
 repo = 'vim-scripts/fontforge_script.vim'
 [[plugins]]
@@ -447,27 +431,19 @@ repo = 'tpope/vim-surround'
 # This is 'a surrounded text'. -> This is '( a surrounded text )'.
 # ysa'(: This is 'a surrounded text'. -> This is( 'a surrounded text' ).
 # }}}
-[[plugins]]
-repo = 'scrooloose/nerdtree'
-hook_add = ''' "{{{
-let g:NERDTreeWinPos = "right"
-let g:NERDTreeShowBookmarks=1
-let g:NERDTreeShowHidden=1
-let g:NERDTreeQuitOnOpen=1
-let g:NERDTreeMouseMode=2
-let g:NERDTreeDirArrows=0
-let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
-let g:NERDTreeBookmarksFile=''
-
-nmap <C-n> :<C-u>NERDTreeToggle<CR>
-"}}} '''
-[[plugins]]
-repo = 'tiagofumo/vim-nerdtree-syntax-highlight'
-on_ft = 'nerdtree'
-depends = 'nerdtree'
-hook_add = ''' 
-let g:NERDTreeLimitedSyntax = 1 
-'''
+# [[plugins]]
+# repo = 'scrooloose/nerdtree'
+# hook_add = ''' "{{{
+# let g:NERDTreeWinPos = "right"
+# let g:NERDTreeShowBookmarks=1
+# let g:NERDTreeShowHidden=1
+# let g:NERDTreeQuitOnOpen=1
+# let g:NERDTreeMouseMode=2
+# let g:NERDTreeDirArrows=0
+# let g:NERDTreeIgnore=['\.git$', '\.clean$', '\.swp$', '\.bak$', '\~$']
+# let g:NERDTreeBookmarksFile=''
+# nmap <C-n> :<C-u>NERDTreeToggle<CR>
+# "}}} '''
 
 [[plugins]]
 repo = 'mbbill/undotree'
@@ -487,10 +463,6 @@ function! g:Undotree_CustomMap()
     map <silent> <buffer> h ?
 endfunction
 "}}} '''
-
-[[plugins]]
-repo = 'skanehira/translate.vim'
-on_if = '''executable('gtran')'''
 
 [[plugins]]
 repo = 'Yggdroot/indentLine'
@@ -513,15 +485,6 @@ repo = 'mattn/webapi-vim'
 
 [[plugins]]
 repo = 'xolox/vim-misc'
-
-[[plugins]]
-repo = 'roxma/nvim-yarp'
-hook_add = '''
-  " Set path for python3 for python37u packages in CentOS7
-  if !executable('python3') && executable('python3.7')
-    let g:python3_host_prog = exepath('python3.7')
-  endif
-'''
 
 [[plugins]]
 repo = 'roxma/vim-hug-neovim-rpc'
