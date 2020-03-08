@@ -67,23 +67,25 @@ if ! type "ghq" > /dev/null 2>&1; then
     go get github.com/motemen/ghq
 fi
 
-# peco
-if ! type "peco" > /dev/null 2>&1; then
-    ghq get https://github.com/peco/peco
-    cd `ghq root`/github.com/peco/peco
-    go install cmd/peco/peco.go
-fi
+if type "ghq" > /dev/null 2>&1; then
+    # peco
+    if ! type "peco" > /dev/null 2>&1; then
+        ghq get https://github.com/peco/peco
+        cd `ghq root`/github.com/peco/peco
+        go install cmd/peco/peco.go
+    fi
 
-# gotop
-if ! type "gotop" > /dev/null 2>&1; then
-    go get github.com/cjbassi/gotop
-fi
+    # gotop
+    if ! type "gotop" > /dev/null 2>&1; then
+        go get github.com/cjbassi/gotop
+    fi
 
-# docui
-if ! type "docui" > /dev/null 2>&1; then
-    go get -d github.com/skanehira/docui
-    cd $GOPATH/src/github.com/skanehira/docui
-    GO111MODULE=on go install
+    # docui
+    if ! type "docui" > /dev/null 2>&1; then
+        go get -d github.com/skanehira/docui
+        cd $GOPATH/src/github.com/skanehira/docui
+        GO111MODULE=on go install
+    fi
 fi
 
 #====================================================================
@@ -102,14 +104,15 @@ fi
 #====================================================================
 # neovim install 
 #====================================================================
-if ! type "nvim" > /dev/null 2>&1; then
-    pip install trash-cli
-    pip install neovim neovim-remote
-    ghq get https://github.com/neovim/neovim
-    cd `ghq root`/github.com/neovim/neovim
-    make CMAKE_BUILD_TYPE=Release -j8
-    sudo make install
+if type "ghq" > /dev/null 2>&1; then
+    if ! type "nvim" > /dev/null 2>&1; then
+        pip install trash-cli
+        pip install neovim neovim-remote
+        ghq get https://github.com/neovim/neovim
+        cd `ghq root`/github.com/neovim/neovim
+        make CMAKE_BUILD_TYPE=Release -j8
+        sudo make install
+    fi
 fi
-
 # path
 cd `dirname $0`
