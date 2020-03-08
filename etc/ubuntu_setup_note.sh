@@ -31,21 +31,14 @@ sudo apt-get upgrade -y
 #====================================================================
 sudo apt-get install -y git gcc g++ make cmake zip tar curl wget lsb-release
 sudo apt-get install -y build-essential software-properties-common libx11-dev \
-    liblua5.2-dev openssh-server libtool libtool-bin
-sudo apt-get install -y tree curl nkf fzy
+    liblua5.2-dev openssh-server
+sudo apt-get install -y tree nkf fzy
 sudo apt-get install -y vim xsel
 
 # neovim required packages
 sudo apt-get install -y ninja-build gettext \
         libtool libtool-bin autoconf automake \
-        cmake g++ pkg-config unzip
-
-# python required
-sudo apt-get install -y curl llvm sqlite3 libssl-dev \
-        libbz2-dev libreadline-dev libsqlite3-dev \
-        libncurses5-dev libncursesw5-dev python-tk \
-        python3-tk tk-dev aria2 \
-        libpython2.7-dev libpython3.7-dev
+        pkg-config unzip
 
 #====================================================================
 # fish install
@@ -53,7 +46,7 @@ sudo apt-get install -y curl llvm sqlite3 libssl-dev \
 if ! type "fish" > /dev/null 2>&1; then
     sudo apt-get install -y fish 
     sudo sed -e '$a /usr/local/bin/fish' /etc/shells 
-    chsh -s /usr/bin/fish
+    sudo chsh -s /usr/bin/fish
     curl -Lo $HOME/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
 
     if type "fish" > /dev/null 2>&1; then

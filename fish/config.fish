@@ -6,7 +6,7 @@ set -x PATH $HOME/.pyenv/bin $PATH
 set -x PYENV_ROOT $HOME/.pyenv
 set -x PATH $PATH $PYENV_ROOT/bin
 set -x PATH $PATH $PYENV_ROOT/shims
-pyenv init - | source
+eval (pyenv init - | source)
 
 # go
 set -x GOPATH $HOME/go
