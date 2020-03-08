@@ -30,8 +30,7 @@ sudo apt-get upgrade -y
 # apt dependence packages
 #====================================================================
 sudo apt-get install -y git gcc g++ make cmake zip tar curl wget lsb-release
-sudo apt-get install -y build-essential software-properties-common libx11-dev \
-    liblua5.2-dev openssh-server
+sudo apt-get install -y build-essential software-properties-common
 sudo apt-get install -y tree nkf fzy
 sudo apt-get install -y vim xsel
 
@@ -60,6 +59,7 @@ if ! type "go" > /dev/null 2>&1; then
     sudo add-apt-repository -y ppa:longsleep/golang-backports
     sudo apt-get update
     sudo apt-get install -y golang-go
+    export PATH=$PATH:$HOME/go/bin
 fi
 
 # ghq 
@@ -110,3 +110,6 @@ if ! type "nvim" > /dev/null 2>&1; then
     make CMAKE_BUILD_TYPE=Release -j8
     sudo make install
 fi
+
+# path
+cd `dirname $0`
