@@ -126,6 +126,98 @@ install_dep() {
     fi
 }
 
+# Neovim のバージョン要件を満たすか判定（0.11+ 必須）
+# 戻り値: 0 = OK, 1 = バージョン不足 or 未インストール
+nvim_version_ok() {
+    command_exists nvim || return 1
+    local ver
+    ver="$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+' | head -1)"
+    local major minor
+    major="$(echo "$ver" | cut -d. -f1)"
+    minor="$(echo "$ver" | cut -d. -f2)"
+    # 0.11+ または 1.x+ なら OK
+    if [ "${major:-0}" -ge 1 ] || { [ "${major:-0}" -eq 0 ] && [ "${minor:-0}" -ge 11 ]; }; then
+        return 0
+    fi
+    return 1
+}
+
+# Neovim インストール（apt で古い場合は GitHub Releases からフォールバック）
+# apt (Ubuntu/Debian) のリポジトリは 0.9 程度で止まっていることが多い
+NVIM_REQUIRED_VERSION="0.11"
+NVIM_GITHUB_TAG="v0.11.6"
+
+install_neovim() {
+    if nvim_version_ok; then
+        ok "Neovim $(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1) は要件を満たしています"
+        return 0
+    fi
+
+    # 既にインストールされているがバージョン不足の場合
+    if command_exists nvim; then
+        local current
+        current="$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+' | head -1)"
+        warn "Neovim $current が検出されました（${NVIM_REQUIRED_VERSION}+ が必要）"
+    fi
+
+    # macOS / brew: brew なら最新が入る
+    if [ "$PKG_MGR" = "brew" ]; then
+        step "Neovim をインストール中 (brew) ..."
+        if $DRY_RUN; then
+            skip "[DryRun] brew install neovim"
+            return 0
+        fi
+        brew install neovim
+        if nvim_version_ok; then
+            ok "Neovim をインストールしました (brew)"
+            return 0
+        fi
+    fi
+
+    # Linux: GitHub Releases から tarball を取得
+    local os
+    os="$(detect_os)"
+    if [ "$os" = "linux" ]; then
+        step "Neovim を GitHub Releases からインストール中 ($NVIM_GITHUB_TAG) ..."
+        local url="https://github.com/neovim/neovim/releases/download/${NVIM_GITHUB_TAG}/nvim-linux-x86_64.tar.gz"
+        local install_dir="/opt/nvim"
+
+        if $DRY_RUN; then
+            skip "[DryRun] curl -> /opt/nvim, symlink /usr/local/bin/nvim"
+            return 0
+        fi
+
+        local tmp
+        tmp="$(mktemp -d)"
+        curl -fsSL "$url" -o "$tmp/nvim.tar.gz"
+        sudo rm -rf "$install_dir"
+        sudo mkdir -p "$install_dir"
+        sudo tar -xzf "$tmp/nvim.tar.gz" -C "$install_dir" --strip-components=1
+        sudo ln -sf "$install_dir/bin/nvim" /usr/local/bin/nvim
+        rm -rf "$tmp"
+
+        # PATH に /usr/local/bin があることを確認
+        export PATH="/usr/local/bin:$PATH"
+
+        if nvim_version_ok; then
+            ok "Neovim $NVIM_GITHUB_TAG をインストールしました (/opt/nvim)"
+            return 0
+        else
+            fail "Neovim のインストールに失敗しました"
+            return 1
+        fi
+    fi
+
+    # それ以外: パッケージマネージャにフォールバック
+    install_dep "Neovim" "nvim" "neovim" "neovim" "neovim" "neovim"
+    if ! nvim_version_ok; then
+        warn "パッケージマネージャの Neovim は ${NVIM_REQUIRED_VERSION}+ を満たしません"
+        warn "手動でアップグレードしてください: https://github.com/neovim/neovim/releases"
+        return 1
+    fi
+    return 0
+}
+
 # Deno は公式インストーラ経由（パッケージマネージャにないことが多い）
 install_deno() {
     if command_exists deno; then
@@ -235,25 +327,8 @@ main() {
     echo "--- 必須依存関係 ---"
     local all_ok=true
 
-    # Neovim: apt のバージョンが古い場合が多いので警告
-    #               apt         dnf        pacman     brew
-    install_dep "Neovim"  "nvim" \
-        "neovim"    "neovim"    "neovim"    "neovim" \
-        || all_ok=false
-
-    # バージョンチェック（0.11+ 必須）
-    if command_exists nvim; then
-        local nvim_version
-        nvim_version="$(nvim --version | head -1 | grep -oE '[0-9]+\.[0-9]+' | head -1)"
-        local nvim_major nvim_minor
-        nvim_major="$(echo "$nvim_version" | cut -d. -f1)"
-        nvim_minor="$(echo "$nvim_version" | cut -d. -f2)"
-        if [ "${nvim_major:-0}" -eq 0 ] && [ "${nvim_minor:-0}" -lt 11 ]; then
-            warn "Neovim $nvim_version が検出されました。0.11+ が必要です"
-            warn "PPA/unstable リポジトリ、snap、または brew でアップグレードしてください"
-            all_ok=false
-        fi
-    fi
+    # Neovim: apt は 0.9 程度で止まっていることが多いため専用ロジック
+    install_neovim || all_ok=false
 
     install_dep "Git"     "git"  "git"       "git"       "git"       "git"        || all_ok=false
     install_deno                                                                   || all_ok=false

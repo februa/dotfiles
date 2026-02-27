@@ -449,7 +449,7 @@ merged = false
 repo = 'yetone/avante.nvim'
 depends = ['plenary.nvim', 'nui.nvim', 'nvim-web-devicons', 'nvim-cmp', 'render-markdown.nvim', 'nvim-treesitter']
 merged = false
-on_cmd = ['AvanteAsk', 'AvanteEdit', 'AvanteToggle', 'AvanteChat', 'AvanteChatNew', 'AvanteHistory', 'AvanteClear', 'AvanteFocus', 'AvanteRefresh', 'AvanteSwitchProvider', 'AvanteModels']
+on_cmd = ['AvanteAsk', 'AvanteEdit', 'AvanteToggle', 'AvanteChat', 'AvanteChatNew', 'AvanteHistory', 'AvanteClear', 'AvanteFocus', 'AvanteRefresh', 'AvanteSwitchProvider', 'AvanteModels', 'AvanteAuth']
 hook_add = '''
 " AI アシスタント (avante.nvim)
 "   saa: AI に質問（ビジュアル選択時は選択範囲について質問）
@@ -459,16 +459,34 @@ hook_add = '''
 "   sar: AI の最後の応答をリフレッシュ
 "   sah: 会話履歴を表示
 "   sam: モデル一覧 / 切替
-nnoremap <silent> saa <Cmd>AvanteAsk<CR>
-xnoremap <silent> saa :AvanteAsk<CR>
-nnoremap <silent> san <Cmd>AvanteChatNew<CR>
-nnoremap <silent> sat <Cmd>AvanteToggle<CR>
-xnoremap <silent> sae :AvanteEdit<CR>
-nnoremap <silent> sar <Cmd>AvanteRefresh<CR>
-nnoremap <silent> sah <Cmd>AvanteHistory<CR>
-nnoremap <silent> sam <Cmd>AvanteModels<CR>
+"   :AvanteAuth で認証を手動実行（初回セットアップ用）
+"
+" 遅延初期化: 初回コマンド実行時に avante.setup() が走る。
+" auth_type='max' の OAuth 認証はユーザ操作なしには開始されない。
+lua <<EOF
+-- 認証ガード付きコマンド実行
+-- 未認証なら通知のみ（OAuth は走らない）。認証済みならコマンド実行。
+local function avante_cmd(cmd)
+  return function()
+    if require('plugins.avante').require_auth() then
+      vim.cmd(cmd)
+    end
+  end
+end
+
+vim.keymap.set('n', 'saa', avante_cmd('AvanteAsk'), { silent = true })
+vim.keymap.set('x', 'saa', avante_cmd('AvanteAsk'), { silent = true })
+vim.keymap.set('n', 'san', avante_cmd('AvanteChatNew'), { silent = true })
+vim.keymap.set('n', 'sat', avante_cmd('AvanteToggle'), { silent = true })
+vim.keymap.set('x', 'sae', avante_cmd('AvanteEdit'), { silent = true })
+vim.keymap.set('n', 'sar', avante_cmd('AvanteRefresh'), { silent = true })
+vim.keymap.set('n', 'sah', avante_cmd('AvanteHistory'), { silent = true })
+vim.keymap.set('n', 'sam', avante_cmd('AvanteModels'), { silent = true })
+EOF
 '''
 hook_source = '''
+" 前処理のみ（ffi パッチ等）。avante.setup() は呼ばない。
+" setup はユーザが Avante コマンドを使った時 or :AvanteAuth で遅延実行。
 lua require('plugins.avante')
 '''
 hook_post_update = '''
