@@ -1,0 +1,14 @@
+# Claude Code
+.claude/
+
+# テストファイル
+docs/test.tsx
+
+# ログ
+install.log
+
+# OS
+nul
+Thumbs.db
+Desktop.ini
+.DS_Store

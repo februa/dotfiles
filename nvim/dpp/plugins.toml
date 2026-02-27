@@ -1,0 +1,526 @@
+# dpp.vim {{{
+[[plugins]]
+repo = 'Shougo/dpp.vim'
+
+[[plugins]]
+repo = 'vim-denops/denops.vim'
+
+[[plugins]]
+repo = 'Shougo/dpp-ext-installer'
+hook_source = '''
+" ユーザー側の上書き版 installer.vim を強制ソース
+execute 'source' stdpath('config') .. '/autoload/dpp/ext/installer.vim'
+'''
+
+[[plugins]]
+repo = 'Shougo/dpp-ext-lazy'
+
+[[plugins]]
+repo = 'Shougo/dpp-ext-toml'
+
+[[plugins]]
+repo = 'Shougo/dpp-protocol-git'
+
+# }}}
+
+# ddu.vim {{{
+# キーマップ・グローバル設定: lua/plugins/ddu.lua
+# ftplugin: after/ftplugin/ddu-{ff,ff-filter,filer}.lua
+[[plugins]]
+repo = 'Shougo/ddu.vim'
+hook_add = 'lua require("plugins.ddu").hook_add()'
+hook_source = 'lua require("plugins.ddu").hook_source()'
+
+# ddu UI (fuzzy finder)
+[[plugins]]
+repo = 'Shougo/ddu-ui-ff'
+
+# ddu sources
+[[plugins]]
+repo = 'Shougo/ddu-source-file_rec'
+
+[[plugins]]
+repo = 'Shougo/ddu-source-buffer'
+
+[[plugins]]
+repo = 'Shougo/ddu-source-file_old'
+
+[[plugins]]
+repo = 'Shougo/ddu-source-line'
+
+[[plugins]]
+repo = 'Shougo/ddu-source-rg'
+# stdin: "null" が Windows で ./nul を生成するバグを手動修正済み。更新で上書きされないよう凍結
+[plugins.extAttrs]
+installerFrozen = true
+
+# ddu kind (ファイル操作: open, preview 等)
+[[plugins]]
+repo = 'Shougo/ddu-kind-file'
+
+# ddu filter
+[[plugins]]
+repo = 'Shougo/ddu-filter-matcher_substring'
+
+# ddu column
+[[plugins]]
+repo = 'Shougo/ddu-column-filename'
+
+# ddu filer (ファイルエクスプローラー)
+[[plugins]]
+repo = 'Shougo/ddu-ui-filer'
+
+[[plugins]]
+repo = 'Shougo/ddu-source-file'
+
+[[plugins]]
+repo = 'ryota2357/ddu-column-icon_filename'
+
+# }}}
+
+# 日本語ヘルプ {{{
+[[plugins]]
+repo = 'vim-jp/vimdoc-ja'
+# }}}
+
+# カラースキーム {{{
+# settings.lua の colorscheme で使用するスキームを選択
+
+[[plugins]]
+repo = 'folke/tokyonight.nvim'
+lazy = false
+priority = 1000
+
+[[plugins]]
+repo = 'catppuccin/nvim'
+name = 'catppuccin'
+lazy = false
+priority = 1000
+
+[[plugins]]
+repo = 'masisz/wisteria.nvim'
+name = 'wisteria'
+lazy = false
+priority = 1000
+
+# }}}
+
+# 通知 {{{
+[[plugins]]
+repo = 'j-hui/fidget.nvim'
+hook_source = '''
+" 通知 + LSP 進捗表示（vim.notify を fidget に置き換え）
+" インストール中は setup をスキップ: vim.notify の乗っ取りが
+" dpp-ext-installer の進捗表示を妨害するため。
+" dpp_reload 時の dpp#source() で再発火し正常セットアップされる。
+" _dpp_fidget_ready はインストーラーの UI モード判定に使用。
+lua <<EOF
+if _G._dpp_installing then return end
+require('fidget').setup({
+  notification = {
+    override_vim_notify = true,
+    window = {
+      winblend = 0,
+    },
+  },
+})
+_G._dpp_fidget_ready = true
+EOF
+'''
+# }}}
+
+# ステータスライン {{{
+[[plugins]]
+repo = 'nvim-lualine/lualine.nvim'
+depends = ['nvim-web-devicons']
+hook_source = '''
+" ステータスライン（iceberg テーマ）
+lua require('plugins.lualine')
+'''
+
+[[plugins]]
+repo = 'nvim-tree/nvim-web-devicons'
+# }}}
+
+
+# モーション {{{
+[[plugins]]
+repo = 'haya14busa/vim-edgemotion'
+hook_add = '''
+" ブロック端ジャンプ
+"   C-j: 下方向のブロック端にジャンプ
+"   C-k: 上方向のブロック端にジャンプ
+nmap <C-j> <Plug>(edgemotion-j)
+nmap <C-k> <Plug>(edgemotion-k)
+'''
+
+[[plugins]]
+repo = 'haya14busa/vim-asterisk'
+hook_add = '''
+" 拡張 * 検索（カーソル位置を動かさない）
+map * <Plug>(asterisk-z*)
+map # <Plug>(asterisk-z#)
+map g* <Plug>(asterisk-gz*)
+map g# <Plug>(asterisk-gz#)
+'''
+# }}}
+
+# コメントトグル
+[[plugins]]
+repo = 'numToStr/Comment.nvim'
+
+hook_source = '''
+" コメントトグル（ts-context-commentstring 連携）
+"   gcc: 行コメントトグル
+"   gc + モーション: 範囲コメント（例: gcip でパラグラフ）
+"   gc: ビジュアルモードで選択範囲をコメント
+lua <<EOF
+require('Comment').setup({
+  pre_hook = function(ctx)
+    local ok, ts_comment = pcall(require, 'ts_context_commentstring.integrations.comment_nvim')
+    if ok then
+      return ts_comment.create_pre_hook()(ctx)
+    end
+  end,
+})
+EOF
+'''
+
+# 自動括弧閉じ
+[[plugins]]
+repo = 'windwp/nvim-autopairs'
+hook_source = '''
+" 自動括弧閉じ
+"   ( → ()  [ → []  { → {}  ' → ''  " → ""
+"   閉じ括弧の上で入力するとスキップ、BS で対も削除
+lua require('nvim-autopairs').setup()
+'''
+
+# Git 差分マーク
+[[plugins]]
+repo = 'lewis6991/gitsigns.nvim'
+hook_source = '''
+" Git 差分マーク（signcolumn に自動表示）
+"   左端に + (追加) ~ (変更) _ (削除) を表示
+lua require('gitsigns').setup()
+'''
+
+# Git 操作
+[[plugins]]
+repo = 'tpope/vim-fugitive'
+hook_add = '''
+" Git 操作
+"   gs: git status（ステージング/アンステージングも可能）
+"   gd: 現在のファイルの diff を分割表示
+"   gb: git blame（行ごとの最終変更者を表示）
+"   gl: git log を1行表示
+nnoremap <silent> gs <Cmd>Git<CR>
+nnoremap <silent> gd <Cmd>Gdiffsplit<CR>
+nnoremap <silent> gb <Cmd>Git blame<CR>
+nnoremap <silent> gl <Cmd>Git log --oneline<CR>
+'''
+
+# テキスト囲み操作
+[[plugins]]
+repo = 'kylechui/nvim-surround'
+hook_source = '''
+" テキスト囲み操作
+"   ys{motion}{char}: 囲み追加（例: ysiw" → カーソル下の単語を "" で囲む）
+"   ds{char}: 囲み削除（例: ds" → "" を削除）
+"   cs{old}{new}: 囲み変更（例: cs"' → "" を '' に変更）
+lua require('nvim-surround').setup()
+'''
+
+
+
+# LSP {{{
+[[plugins]]
+repo = 'neovim/nvim-lspconfig'
+
+[[plugins]]
+repo = 'mason-org/mason.nvim'
+
+[[plugins]]
+repo = 'mason-org/mason-lspconfig.nvim'
+depends = ['mason.nvim', 'nvim-lspconfig', 'cmp-nvim-lsp']
+hook_source = '''
+" LSP 設定（mason + lspconfig）
+lua require('plugins.lsp')
+'''
+# }}}
+
+# 補完 (nvim-cmp) {{{
+[[plugins]]
+repo = 'hrsh7th/nvim-cmp'
+depends = ['nvim-lspconfig', 'cmp-nvim-lsp', 'cmp-buffer', 'cmp-path', 'cmp-vsnip', 'vim-vsnip']
+hook_source = '''
+" 補完設定（NvChad 風スタイリング）
+"   Tab / S-Tab: 次・前の候補を選択
+"   Enter: 候補を確定
+"   C-n / C-p: 候補を選択（従来キー）
+"   C-Space: 手動で補完を開始
+lua require('plugins.cmp')
+'''
+
+[[plugins]]
+repo = 'hrsh7th/cmp-nvim-lsp'
+name = 'cmp-nvim-lsp'
+merged = false
+
+[[plugins]]
+repo = 'hrsh7th/cmp-buffer'
+name = 'cmp-buffer'
+merged = false
+
+[[plugins]]
+repo = 'hrsh7th/cmp-path'
+name = 'cmp-path'
+merged = false
+
+[[plugins]]
+repo = 'hrsh7th/cmp-vsnip'
+name = 'cmp-vsnip'
+merged = false
+# }}}
+
+# スニペット {{{
+[[plugins]]
+repo = 'hrsh7th/vim-vsnip'
+# }}}
+
+# treesitter {{{
+[[plugins]]
+repo = 'nvim-treesitter/nvim-treesitter'
+hook_source = '''
+" 構文ハイライト・埋め込み言語認識
+"   :TSInstall {lang} で個別インストール、:TSUpdate で一括更新
+"   Neovim 0.11 では highlight/indent は vim.treesitter で組み込み
+lua require('plugins.treesitter')
+'''
+hook_post_update = 'TSUpdate'
+
+[[plugins]]
+repo = 'windwp/nvim-ts-autotag'
+on_ft = ['html', 'javascript', 'typescript', 'javascriptreact', 'typescriptreact', 'vue', 'svelte', 'xml', 'markdown']
+depends = ['nvim-treesitter']
+hook_source = '''
+" HTML/JSX タグ自動閉じ・リネーム
+"   <div と入力すると </div> が自動挿入
+"   開始タグをリネームすると閉じタグも連動
+lua <<EOF
+local ok, autotag = pcall(require, 'nvim-ts-autotag')
+if ok then
+  autotag.setup()
+  local ok2, internal = pcall(require, 'nvim-ts-autotag.internal')
+  if ok2 then internal.attach(vim.api.nvim_get_current_buf()) end
+end
+EOF
+'''
+
+[[plugins]]
+repo = 'JoosepAlviste/nvim-ts-context-commentstring'
+on_source = 'nvim-treesitter'
+hook_source = '''
+" 埋め込み言語の正しいコメント構文（JSX/TSX 等）
+lua <<EOF
+local ok, tsc = pcall(require, 'ts_context_commentstring')
+if ok then tsc.setup({ enable_autocmd = false }) end
+EOF
+'''
+# }}}
+
+# 表示強化 {{{
+[[plugins]]
+repo = 'shellRaining/hlchunk.nvim'
+hook_source = '''
+" インデントガイド / チャンクハイライト
+"   カーソル位置のコードブロックを線で可視化
+lua <<EOF
+require('hlchunk').setup({
+  chunk = { enable = true },
+  indent = { enable = true },
+  line_num = { enable = false },
+  blank = { enable = false },
+})
+EOF
+'''
+
+[[plugins]]
+repo = 'MeanderingProgrammer/render-markdown.nvim'
+on_ft = ['markdown', 'Avante']
+hook_source = '''
+" Markdown リッチ描画
+"   見出し・リスト・チェックボックス・コードブロックを装飾表示
+"   Avante サイドバーでも Markdown レンダリングを有効化
+" 初回インストール中は runtimepath 未反映で require が失敗する場合がある
+lua <<EOF
+local ok, rm = pcall(require, 'render-markdown')
+if ok then
+  rm.setup({
+    file_types = { 'markdown', 'Avante' },
+    latex = { enabled = false },
+    yaml = { enabled = false },
+  })
+end
+EOF
+'''
+
+[[plugins]]
+repo = 'm-demare/hlargs.nvim'
+on_source = 'nvim-treesitter'
+hook_source = '''
+" 関数引数ハイライト
+lua <<EOF
+local ok, hlargs = pcall(require, 'hlargs')
+if ok then hlargs.setup() end
+EOF
+'''
+
+
+# }}}
+
+# 編集支援 {{{
+[[plugins]]
+repo = 'uga-rosa/ccc.nvim'
+on_cmd = ['CccPick', 'CccConvert', 'CccHighlighterToggle']
+hook_add = '''
+" カラーコードピッカー
+"   \cc: カラーピッカーを開く
+"   \ch: バッファ内のカラーコードをハイライト表示切替
+nnoremap <Leader>cc <Cmd>CccPick<CR>
+nnoremap <Leader>ch <Cmd>CccHighlighterToggle<CR>
+'''
+
+[[plugins]]
+repo = 'ysmb-wtsg/in-and-out.nvim'
+hook_add = '''
+" 括弧の外にジャンプ
+"   C-CR: 挿入モードで括弧/引用符の外にジャンプ
+inoremap <C-CR> <Cmd>lua require('in-and-out').in_and_out()<CR>
+'''
+
+[[plugins]]
+repo = 'nacro90/numb.nvim'
+on_event = 'CmdlineEnter'
+hook_source = '''
+" 行番号プレビュー（:123 入力中にその行をプレビュー）
+lua require('numb').setup()
+'''
+# }}}
+
+# フォーマッター {{{
+[[plugins]]
+repo = 'stevearc/conform.nvim'
+hook_source = '''
+" 保存時自動フォーマット
+"   TypeScript/JavaScript/HTML/CSS/JSON: prettierd
+"   \f はフォーマットキーマップ（lsp.lua 側で定義済み）
+lua <<EOF
+require('conform').setup({
+  formatters_by_ft = {
+    typescript = { 'prettierd' },
+    typescriptreact = { 'prettierd' },
+    javascript = { 'prettierd' },
+    javascriptreact = { 'prettierd' },
+    html = { 'prettierd' },
+    css = { 'prettierd' },
+    json = { 'prettierd' },
+    markdown = { 'prettierd' },
+  },
+  format_on_save = {
+    timeout_ms = 2000,
+    lsp_format = 'fallback',
+  },
+})
+EOF
+'''
+# }}}
+
+# AI アシスタント (avante.nvim) {{{
+[[plugins]]
+repo = 'nvim-lua/plenary.nvim'
+merged = false
+
+[[plugins]]
+repo = 'MunifTanjim/nui.nvim'
+merged = false
+
+[[plugins]]
+repo = 'yetone/avante.nvim'
+depends = ['plenary.nvim', 'nui.nvim', 'nvim-web-devicons', 'nvim-cmp', 'render-markdown.nvim', 'nvim-treesitter']
+merged = false
+on_cmd = ['AvanteAsk', 'AvanteEdit', 'AvanteToggle', 'AvanteChat', 'AvanteChatNew', 'AvanteHistory', 'AvanteClear', 'AvanteFocus', 'AvanteRefresh', 'AvanteSwitchProvider', 'AvanteModels']
+hook_add = '''
+" AI アシスタント (avante.nvim)
+"   saa: AI に質問（ビジュアル選択時は選択範囲について質問）
+"   san: 新しい会話を開始して質問
+"   sat: サイドバー表示切替
+"   sae: 選択範囲を AI で編集
+"   sar: AI の最後の応答をリフレッシュ
+"   sah: 会話履歴を表示
+"   sam: モデル一覧 / 切替
+nnoremap <silent> saa <Cmd>AvanteAsk<CR>
+xnoremap <silent> saa :AvanteAsk<CR>
+nnoremap <silent> san <Cmd>AvanteChatNew<CR>
+nnoremap <silent> sat <Cmd>AvanteToggle<CR>
+xnoremap <silent> sae :AvanteEdit<CR>
+nnoremap <silent> sar <Cmd>AvanteRefresh<CR>
+nnoremap <silent> sah <Cmd>AvanteHistory<CR>
+nnoremap <silent> sam <Cmd>AvanteModels<CR>
+'''
+hook_source = '''
+lua require('plugins.avante')
+'''
+hook_post_update = '''
+lua <<EOF
+local path = vim.fn['dpp#get']('avante.nvim').path
+if vim.fn.has('win32') == 1 then
+  vim.fn.system({'powershell', '-ExecutionPolicy', 'Bypass', '-File', path .. '/Build.ps1', '-BuildFromSource', 'false'})
+else
+  local sh = path .. '/build.sh'
+  if vim.fn.filereadable(sh) == 1 then vim.fn.system({'bash', sh}) end
+end
+EOF
+'''
+# }}}
+
+# ターミナルトグル・コード実行 {{{
+[[plugins]]
+repo = 'akinsho/toggleterm.nvim'
+hook_source = '''
+" 永続ターミナル（Ctrl+\ でトグル）
+"   \rt: カレントファイルを node/tsx で実行
+"   \rs: npm start を実行（プロジェクトルート検出）
+"   \rr: npm test を実行
+lua require('plugins.toggleterm')
+'''
+# }}}
+
+
+# キーマップヒント {{{
+[[plugins]]
+repo = 'folke/which-key.nvim'
+hook_source = '''
+lua require('plugins.which-key')
+'''
+# }}}
+
+# ノート管理 (zk) {{{
+[[plugins]]
+repo = 'zk-org/zk-nvim'
+on_ft = 'markdown'
+hook_add = '''
+" ノート操作（ノートブック外からも動作、ZK_NOTEBOOK_DIR 必須）
+"   szn: 新規ノート作成（タイトル入力）
+"   szo: ノート一覧（更新日順）
+"   szt: タグでフィルタ
+"   szf: ノート検索（キーワード入力）
+nnoremap <silent> szn <Cmd>lua require('plugins.zk').new_note()<CR>
+nnoremap <silent> szo <Cmd>lua require('plugins.zk').list_notes()<CR>
+nnoremap <silent> szt <Cmd>lua require('plugins.zk').list_tags()<CR>
+nnoremap <silent> szf <Cmd>lua require('plugins.zk').find_notes()<CR>
+'''
+hook_source = '''
+lua require('plugins.zk').setup()
+'''
+# }}}
